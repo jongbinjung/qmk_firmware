@@ -58,9 +58,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // Vi word forward: Ctrl + Right Arrow
         register_mods(MOD_LCTL);
-        tap_code(KC_RIGHT);
+        SEND_STRING(SS_DOWN(X_RIGHT));
       } else {
         // Release modifier on key release
+        SEND_STRING(SS_UP(X_RIGHT));
         unregister_mods(MOD_LCTL);
       }
       break;
@@ -69,9 +70,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       if (record->event.pressed) {
         // Vi word backward: Ctrl + Left Arrow
         register_mods(MOD_LCTL);
-        tap_code(KC_LEFT);
+        SEND_STRING(SS_DOWN(X_LEFT));
       } else {
         // Release modifier on key release
+        SEND_STRING(SS_UP(X_LEFT));
         unregister_mods(MOD_LCTL);
       }
       break;
