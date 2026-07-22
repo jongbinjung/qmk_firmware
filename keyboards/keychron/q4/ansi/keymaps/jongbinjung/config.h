@@ -17,5 +17,13 @@
 #pragma once
 
 // https://docs.qmk.fm/tap_hold#permissive-hold
-#define PERMISSIVE_HOLD
-#define HOLD_ON_OTHER_KEY_PRESS
+// Layer-taps (space/tab/grave) stay on QMK's lazy, timeout-based default so
+// fast rolls send the tapped key (matches TMK/HHKB "bean" behavior).
+/* #define PERMISSIVE_HOLD */
+
+// TMK resolves mod-taps to the modifier the instant another key interrupts
+// them. QMK gates that behind HOLD_ON_OTHER_KEY_PRESS, so enable it per-key
+// (see get_hold_on_other_key_press in keymap.c) only for the mod-taps
+// (Esc/Ctrl, Enter/RCtrl) while leaving the layer-taps lazy.
+// https://docs.qmk.fm/tap_hold#hold-on-other-key-press
+#define HOLD_ON_OTHER_KEY_PRESS_PER_KEY

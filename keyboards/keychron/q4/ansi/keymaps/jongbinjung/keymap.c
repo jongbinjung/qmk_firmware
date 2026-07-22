@@ -81,6 +81,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return true;
 };
 
+// TMK's default mod-tap behavior converts the key to its modifier the moment
+// another key interrupts it (interrupted => hold), which lets fast rolls like
+// "Esc + J" register as "Ctrl + J" without dwelling on Esc. QMK gates that
+// behind HOLD_ON_OTHER_KEY_PRESS, so enable it only for the mod-taps here.
+// Layer-taps (space/tab/grave) intentionally fall through to the lazy default
+// so rolls send the tapped key instead of switching layers.
+bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+    case LCTL_T(KC_ESC):
+    case RCTL_T(KC_ENT):
+      return true;  // mod-taps: interrupt => hold (TMK-like, eager)
+    default:
+      return false; // layer-taps: lazy, timeout-based (roll-friendly)
+  }
+}
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MAC_BASE] = LAYOUT_ansi_61(
     LT(FNPAD,KC_GRAVE),    KC_1,    KC_2, KC_3, KC_4, KC_5, KC_6, KC_7,    KC_8,   KC_9,       KC_0,    KC_MINS, KC_EQL,  KC_BSLS,
