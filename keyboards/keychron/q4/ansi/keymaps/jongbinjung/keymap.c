@@ -117,7 +117,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
     _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
     _______,           _______, _______, _______, _______, _______, NK_TOGG, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
-    _______, _______,  _______,                   _______,                            _______,  _______,  MO(SYS_FN),  _______),
+    _______, _______,  _______,                    TG(VI),                            _______,  _______,  MO(SYS_FN),  _______),
 
   [WIN_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   RM_VALD, RM_VALU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  RM_NEXT,
@@ -131,7 +131,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, _______,  _______,  _______,  _______,
     _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, _______, _______, _______,  _______,            _______,
     _______,           _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______,            _______,
-    _______, _______,  _______,                            _______,                            _______,  MO(SYS_FN),  _______,  _______),
+    _______, _______,  _______,                             TG(VI),                            _______,  MO(SYS_FN),  _______,  _______),
 
   [SYS_FN] = LAYOUT_ansi_61(
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
@@ -164,7 +164,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [VI] = LAYOUT_ansi_61(
      KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS, KC_EQL,  KC_BSPC,
      KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP, KC_HOME,  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
-    _______, KC_MSTP, KC_MPLY, KC_MPRV, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
+     TG(VI), KC_MSTP, KC_MPLY, KC_MPRV, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
     _______,   KC_NO,  KC_DEL,   KC_NO, _______, VI_BACK, KC_PGDN,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______,
     KC_LCTL, KC_LOPT, KC_LCMD,                   _______,                   KC_RCMD, _______, _______, KC_RCTL)
 
