@@ -163,8 +163,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [VI] = LAYOUT_ansi_61(
      KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS, KC_EQL,  KC_BSPC,
-     KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP, KC_HOME,  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
-     TG(VI), KC_MSTP, KC_MPLY, KC_MPRV, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
+     KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP,  TG(VI),  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
+    _______, KC_MSTP, KC_MPLY, KC_MPRV, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
     _______,   KC_NO,  KC_DEL,   KC_NO, _______, VI_BACK, KC_PGDN,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______,
     KC_LCTL, KC_LOPT, KC_LCMD,                   _______,                   KC_RCMD, _______, _______, KC_RCTL)
 
