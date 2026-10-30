@@ -226,3 +226,19 @@ Manual checklist after flashing (user):
 7. Fn3+Tab still toggles host Caps Lock (white LED), and whatever the host
    remaps Caps Lock to still fires.
 8. Leave any layer locked for 60 s idle: it unlocks.
+
+## Addendum, 2026-10-30: locked Fn layers and the RGB toggle
+
+After flashing, the board went fully dark, indicators included, while keys
+worked. Root cause: with an Fn layer locked, Tab is `RM_TOGG`. A stray Tab
+turned RGB off, QMK persisted that to EEPROM, and the state survived every
+reflash. Indicator callbacks are skipped whenever the effect is disabled, so
+the amber lock light could not warn about it. Fn1+Tab restored the lights.
+
+Change: `process_record_user` ignores `RM_TOGG` when the highest active layer
+is locked (`is_layer_locked`). Held Fn1+Tab still toggles. Hue, brightness,
+speed and mode keys stay usable on a locked Fn layer. The readme gained a
+"lights dark" recovery entry (Fn1+Tab, then Bootmagic EEPROM reset) and now
+states that this board is the v2 revision; the earlier advice to pick the
+variant from the USB device version was wrong, since that number comes from
+the flashed firmware.

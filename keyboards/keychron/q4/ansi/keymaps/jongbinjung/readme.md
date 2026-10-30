@@ -7,9 +7,12 @@ maintained by hand. To cross-check them against the source:
 qmk c2json -kb keychron/q4/ansi/v1 -km jongbinjung keyboards/keychron/q4/ansi/keymaps/jongbinjung/keymap.c
 ```
 
-Flash with `qmk flash -kb keychron/q4/ansi/v1 -km jongbinjung` (or `v2`; the
-USB device version in System Information tells you which board you have:
-1.0.x is v1, 2.0.x is v2).
+This board is the **v2** revision (one SNLED27351 LED driver). Always build and
+flash `keychron/q4/ansi/v2`. `v1` firmware runs fine but leaves every LED dark,
+because it expects a second driver chip. The USB device version the OS shows
+reflects whatever firmware is flashed, not the hardware, so do not use it to
+pick the variant. Flash with `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`
+(the qmk user config defaults to this target, so a bare `qmk flash` also works).
 
 ## Layer overview
 
@@ -246,6 +249,10 @@ nothing on that layer.
 - Any locked layer unlocks by itself after 60 seconds without a keypress.
 - Tapping Space too quickly after the layer key resolves the layer key as a
   tap (you get a Tab, a grave, or a space) instead of locking.
+- On a locked Fn layer the alpha block is RGB controls. The RGB toggle (Tab) is
+  ignored while locked, so a stray Tab cannot turn the lights off; hue,
+  brightness, speed and mode still work. Unlock first if you really want to
+  toggle.
 
 ### VI mode
 
@@ -292,7 +299,8 @@ nothing on that layer.
 
 - Fn1 or Fn2 then the Q/W/E/R/T row: mode next, brightness up, hue up,
   saturation up, speed up. The A/S/D/F/G row is the same, going down.
-- Fn1+Tab or Fn2+Tab toggles RGB. Layer and Caps indicators do not render
+- Fn1+Tab or Fn2+Tab (held, not locked) toggles RGB. The toggle state is stored
+  in EEPROM and survives reflashing. Layer and Caps indicators do not render
   while RGB is toggled off; lower the brightness instead if you want a dark
   board with indicators.
 
@@ -308,6 +316,10 @@ nothing on that layer.
 
 - **Bootloader:** hold Fn1, then Fn2, then tap Fn3 (SYS_FN layer, `BOOT`).
   The board disconnects and shows up as a DFU device.
-- Build: `qmk compile -kb keychron/q4/ansi/v1 -km jongbinjung` (or `v2`).
-- Flash: `qmk flash -kb keychron/q4/ansi/v1 -km jongbinjung`, then enter the
+- Build: `qmk compile -kb keychron/q4/ansi/v2 -km jongbinjung`.
+- Flash: `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`, then enter the
   bootloader when prompted.
+- **Lights dark, keys fine:** RGB is toggled off in EEPROM. Hold Fn1, tap Tab.
+  If that does nothing, use Bootmagic: unplug, hold the top-left (grave) key
+  while plugging in. That clears EEPROM and enters the bootloader; flash v2
+  again afterwards and RGB comes back at defaults.
