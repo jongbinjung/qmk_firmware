@@ -87,13 +87,17 @@ to the base layer.
 
 ### 3. Caps Word
 
-- `CW_TOGG` replaces `KC_CAPS` on the Tab position of HHKB_FN (Fn3+Tab).
-- `BOTH_SHIFTS_TURNS_ON_CAPS_WORD` is defined. Pressing both Space Cadet
-  shifts turns Caps Word on immediately. Releasing both within 200 ms also
-  fires the second shift's tap and types a stray `)`; holding past 200 ms
-  before releasing avoids that. This is documented, accepted behavior.
+- Activation is **both shifts only**: `BOTH_SHIFTS_TURNS_ON_CAPS_WORD` is
+  defined and no `CW_TOGG` key is placed. Pressing both Space Cadet shifts
+  turns Caps Word on immediately. Releasing both within 200 ms also fires the
+  second shift's tap and types a stray `)`; holding past 200 ms before
+  releasing avoids that. This is documented, accepted behavior.
+- `KC_CAPS` stays on the Tab position of HHKB_FN (Fn3+Tab). The user remaps the
+  literal Caps Lock key on the host, so it must keep being sent.
+- Caps Word never sends Caps Lock. It adds a weak Left Shift to each letter as
+  it is typed (`process_caps_word.c`), so the host's Caps Lock remap is
+  unaffected and the host Caps Lock LED state does not change.
 - Caps Word idle timeout stays at the 5 s default. No other Caps Word options.
-- Caps Lock itself is no longer bound anywhere on the keymap.
 
 ### 4. RGB indicators
 
@@ -154,8 +158,7 @@ Diagrams:
   diagram reads like the keyboard.
 - Labels are human-readable, not keycodes: `Esc/Ctl` for `LCTL_T(KC_ESC)`,
   `Tab/NUM` for `LT(NUMPAD,KC_TAB)`, `word>` for `VI_WORD`, `LOCK` for
-  `QK_LLCK`, `insert` for `VI_INS`, `CapsW` for `CW_TOGG`, `BOOT` for
-  `QK_BOOTLOADER`. Transparent keys are blank; `KC_NO` keys show `x`.
+  `QK_LLCK`, `insert` for `VI_INS`, `BOOT` for `QK_BOOTLOADER`. Transparent keys are blank; `KC_NO` keys show `x`.
 - The first version is generated from `qmk c2json` output so it matches the
   keymap exactly, then kept by hand. A one-line note at the top says the
   diagrams are maintained manually and names the `c2json` command for
@@ -176,8 +179,10 @@ Sections, in order:
    - VI mode: hold Space for momentary; Space+Esc to lock (normal mode); I to
      unlock (insert mode); Space types a space while locked; Esc/Ctrl held is
      still Ctrl.
-   - Caps Word: Fn3+Tab or both shifts held past 200 ms; turns off on space or
-     punctuation or 5 s idle; Esc/Ctrl LED yellow while on.
+   - Caps Word: both shifts held past 200 ms; turns off on space or
+     punctuation or 5 s idle; Esc/Ctrl LED yellow while on. Sends shifted
+     letters, never Caps Lock, so host Caps Lock remaps are untouched.
+     Fn3+Tab remains a literal Caps Lock press.
    - Tap-hold feel: Esc/Ctrl and Enter/Ctrl resolve to the modifier as soon as
      another key is pressed (TMK-like); Space, Tab and Grave layer-taps are
      lazy so fast rolls send the tapped key.
@@ -216,7 +221,8 @@ Manual checklist after flashing (user):
 4. Hold Space, tap Esc, release Space: VI persists; Space LED amber. H/J/K/L
    move the cursor. Tap Space: types a space, VI stays. Tap I: back to base.
 5. In locked VI, hold Esc/Ctrl and press Enter: Ctrl+Enter is sent.
-6. Fn3+Tab: Caps Word on, Esc/Ctrl LED yellow; type `foo_bar` then space:
-   `FOO_BAR` and Caps Word off.
-7. Hold both shifts 300 ms, release: Caps Word on, nothing typed.
+6. Hold both shifts 300 ms, release: Caps Word on, nothing typed, Esc/Ctrl
+   LED yellow; type `foo_bar` then space: `FOO_BAR` and Caps Word off.
+7. Fn3+Tab still toggles host Caps Lock (white LED), and whatever the host
+   remaps Caps Lock to still fires.
 8. Leave any layer locked for 60 s idle: it unlocks.
