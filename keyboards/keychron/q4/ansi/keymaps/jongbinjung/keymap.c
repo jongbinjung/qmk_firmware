@@ -44,57 +44,186 @@ enum q4_index {
 };
 
 enum custom_keycodes {
-  // Custom keycodes for macros
-  UNSAFE = SAFE_RANGE, // This is a custom keycode that is safe to use in QMK,
-                       // starting from the SAFE_RANGE to avoid conflicts with
-                       // existing keycodes.
-  VI_WORD,  // vi navigation 'w'
-  VI_BACK,  // vi navigation 'b'
-  VI_INS    // vi 'i': leave a locked VI layer (back to "insert mode")
+  UNSAFE = SAFE_RANGE, // first keycode that is safe for a keymap to define
+  // vi normal-mode keys. Behaviour lives in vi_keys[] / process_vi_key();
+  // VI_O and VI_V are multi-step and handled in process_record_user.
+  VI_H, VI_J, VI_K, VI_L, VI_0, VI_W, VI_E, VI_B, VI_F, VI_G, VI_4, VI_6,
+  VI_D, VI_U, VI_R, VI_X, VI_Y, VI_P, VI_N, VI_I, VI_A, VI_O, VI_V
 };
 
+// ---- vi emulation ---------------------------------------------------------
+// Normal mode is the VI layer. Insert mode is leaving it. Visual mode is a
+// flag: while set, motions are sent with Shift so the host extends a
+// selection. All shortcuts use Ctrl (the host remaps Ctrl to Cmd on macOS).
+enum vi_kind {
+  VK_MOTION,    // register on press / unregister on release; shifted in visual
+  VK_OPERATOR,  // tap, then leave visual mode
+  VK_ACTION,    // tap; visual mode untouched, never shifted
+  VK_INSERT,    // tap, leave visual mode, unlock VI
+};
+
+// plain: sent normally (KC_NO = nothing). shift: with a shift held (0 = same
+// as plain). ctrl: with Ctrl held, always a bare tap (0 = dead for
+// operators/actions/inserts, "pass through with Ctrl kept" for motions).
+typedef struct {
+  uint16_t key, plain, shift, ctrl;
+  uint8_t  kind;
+} vi_key_t;
+
+static const vi_key_t vi_keys[] PROGMEM = {
+  {VI_H, KC_LEFT,    0,          0,          VK_MOTION},
+  {VI_J, KC_DOWN,    0,          0,          VK_MOTION},
+  {VI_K, KC_UP,      0,          0,          VK_MOTION},
+  {VI_L, KC_RGHT,    0,          0,          VK_MOTION},
+  {VI_0, KC_HOME,    0,          0,          VK_MOTION},
+  {VI_4, KC_NO,      KC_END,     0,          VK_MOTION},   // $
+  {VI_6, KC_NO,      KC_HOME,    0,          VK_MOTION},   // ^
+  {VI_W, C(KC_RGHT), 0,          0,          VK_MOTION},
+  {VI_E, C(KC_RGHT), 0,          0,          VK_MOTION},
+  {VI_B, C(KC_LEFT), 0,          KC_PGUP,    VK_MOTION},   // Ctrl+b page up
+  {VI_F, KC_NO,      0,          KC_PGDN,    VK_MOTION},   // Ctrl+f page down
+  {VI_G, C(KC_HOME), C(KC_END),  0,          VK_MOTION},   // g / G
+  {VI_D, C(KC_X),    0,          KC_PGDN,    VK_OPERATOR}, // cut; Ctrl+d half page
+  {VI_U, C(KC_Z),    S(C(KC_Z)), KC_PGUP,    VK_OPERATOR}, // undo / redo; Ctrl+u
+  {VI_R, KC_NO,      0,          S(C(KC_Z)), VK_OPERATOR}, // Ctrl+r redo
+  {VI_X, KC_DEL,     KC_BSPC,    0,          VK_OPERATOR},
+  {VI_Y, C(KC_C),    0,          0,          VK_OPERATOR},
+  {VI_P, C(KC_V),    0,          0,          VK_OPERATOR},
+  {VI_N, C(KC_G),    S(C(KC_G)), 0,          VK_ACTION},   // find next / previous
+  {VI_I, KC_NO,      KC_HOME,    0,          VK_INSERT},
+  {VI_A, KC_RGHT,    KC_END,     0,          VK_INSERT},
+};
+
+static bool     vi_visual;                      // visual mode flag
+static uint16_t vi_down[ARRAY_SIZE(vi_keys)];   // code a held motion registered
+
+// Tap kc with the physical modifiers suppressed, so Esc+b yields a bare PgUp
+// and X a bare Backspace. kc may carry its own C()/S() wrappers.
+static void vi_tap(uint16_t kc) {
+  if (kc == KC_NO) {
+    return;
+  }
+  const uint8_t mods = get_mods();
+  clear_mods();
+  tap_code16(kc);
+  set_mods(mods);
+}
+
+static void vi_leave_visual(void) {
+  vi_visual = false;
+}
+
+static void vi_insert(void) {
+  vi_leave_visual();
+  layer_lock_off(VI);  // no-op while VI is only held via Space
+}
+
+static bool is_vi_motion(uint16_t kc) {
+  for (uint8_t i = 0; i < ARRAY_SIZE(vi_keys); i++) {
+    if (pgm_read_word(&vi_keys[i].key) == kc) {
+      return pgm_read_byte(&vi_keys[i].kind) == VK_MOTION;
+    }
+  }
+  return false;
+}
+
+// Returns false when the keycode was a vi key (handled), true otherwise.
+static bool process_vi_key(uint16_t keycode, keyrecord_t *record) {
+  for (uint8_t i = 0; i < ARRAY_SIZE(vi_keys); i++) {
+    vi_key_t k;
+    memcpy_P(&k, &vi_keys[i], sizeof(k));
+    if (k.key != keycode) {
+      continue;
+    }
+    if (!record->event.pressed) {
+      // Release: let go of whatever this key registered, whatever the
+      // modifiers or visual state are now.
+      if (vi_down[i]) {
+        unregister_code16(vi_down[i]);
+        vi_down[i] = 0;
+      }
+      return false;
+    }
+    const uint8_t mods = get_mods();
+    if ((mods & MOD_MASK_CTRL) && !(k.kind == VK_MOTION && k.ctrl == 0)) {
+      vi_tap(k.ctrl);  // vi Ctrl chord (Esc held): always a single tap
+      return false;
+    }
+    uint16_t kc = ((mods & MOD_MASK_SHIFT) && k.shift) ? k.shift : k.plain;
+    if (k.kind == VK_MOTION) {
+      if (kc != KC_NO) {
+        if (vi_visual) {
+          kc |= QK_LSFT;
+        }
+        vi_down[i] = kc;
+        register_code16(kc);  // physical mods stay: Shift+l still selects
+      }
+      return false;
+    }
+    vi_tap(kc);
+    if (k.kind == VK_OPERATOR) {
+      vi_leave_visual();
+    } else if (k.kind == VK_INSERT) {
+      vi_insert();
+    }
+    return false;
+  }
+  return true;
+}
+
+layer_state_t layer_state_set_user(layer_state_t state) {
+  if (!layer_state_cmp(state, VI)) {
+    vi_leave_visual();  // Space released, i/a/o unlocked, or idle timeout
+  }
+  return state;
+}
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (!process_vi_key(keycode, record)) {
+    return false;
+  }
   switch (keycode) {
-    case VI_WORD:
+    case VI_O:
+      // o: open a line below and enter insert. O: open above.
       if (record->event.pressed) {
-        // Vi word forward: Ctrl + Right Arrow
-        register_mods(MOD_LCTL);
-        SEND_STRING(SS_DOWN(X_RIGHT));
-      } else {
-        // Release modifier on key release
-        SEND_STRING(SS_UP(X_RIGHT));
-        unregister_mods(MOD_LCTL);
+        const bool above = get_mods() & MOD_MASK_SHIFT;
+        vi_tap(above ? KC_HOME : KC_END);
+        vi_tap(KC_ENT);
+        if (above) {
+          vi_tap(KC_UP);
+        }
+        vi_insert();
       }
-      break;
+      return false;
 
-    case VI_BACK:
+    case VI_V:
+      // v toggles visual mode. V starts it linewise: Home, then select to End.
       if (record->event.pressed) {
-        // Vi word backward: Ctrl + Left Arrow
-        register_mods(MOD_LCTL);
-        SEND_STRING(SS_DOWN(X_LEFT));
-      } else {
-        // Release modifier on key release
-        SEND_STRING(SS_UP(X_LEFT));
-        unregister_mods(MOD_LCTL);
-      }
-      break;
-
-    case VI_INS:
-      // vi "i": leave normal mode. layer_lock_off is a no-op when VI is only
-      // being held via space, so this never fights the momentary layer.
-      if (record->event.pressed) {
-        layer_lock_off(VI);
+        if (vi_visual) {
+          vi_leave_visual();
+        } else if (get_mods() & MOD_MASK_SHIFT) {
+          vi_tap(KC_HOME);
+          vi_visual = true;
+          vi_tap(S(KC_END));
+        } else {
+          vi_visual = true;
+        }
       }
       return false;
 
     case LCTL_T(KC_ESC):
-      // vi "Esc": a *tap* of Esc/Ctrl while VI is active locks VI (normal
-      // mode) instead of sending Escape. Holding it is still Ctrl inside VI,
-      // and tapping it in an already-locked VI is a no-op, like vi. The key is
-      // transparent on the VI layer, so the mod-tap keycode arrives here.
+      // vi "Esc": a *tap* of Esc/Ctrl while VI is active leaves visual mode if
+      // it is on, otherwise locks VI (normal mode), instead of sending Escape.
+      // Holding it is still Ctrl inside VI; tapping it in an already-locked VI
+      // is a no-op, like vi. The key is transparent on the VI layer, so the
+      // mod-tap keycode arrives here.
       if (record->tap.count && layer_state_is(VI)) {
         if (record->event.pressed) {
-          layer_lock_on(VI);
+          if (vi_visual) {
+            vi_leave_visual();
+          } else {
+            layer_lock_on(VI);
+          }
         }
         return false;
       }
@@ -133,8 +262,8 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
 // Layer Lock convention: the space bar is QK_LLCK on every held layer except
 // VI (whose activator *is* space). Hold the layer key past TAPPING_TERM, tap
 // space, release: the layer stays on. Tap space again (or the layer's Fn key)
-// to unlock. VI locks via Esc and unlocks via I instead; see
-// process_record_user.
+// to unlock. VI locks via Esc and unlocks via the insert keys (i, a, o)
+// instead; see the vi emulation section above.
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MAC_BASE] = LAYOUT_ansi_61(
     LT(FNPAD,KC_GRAVE),    KC_1,    KC_2, KC_3, KC_4, KC_5, KC_6, KC_7,    KC_8,   KC_9,       KC_0,    KC_MINS, KC_EQL,  KC_BSLS,
@@ -151,24 +280,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_LCTL, KC_LGUI, KC_LALT,            LT(VI, KC_SPC),             KC_RALT, MO(WIN_FN), MO(SHR_FN), MO(HHKB_FN)),
 
   [MAC_FN] = LAYOUT_ansi_61(
-    KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   RM_VALD, RM_VALU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE,  KC_VOLD,  KC_VOLU,  RM_NEXT,
-    RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
-    _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
-    _______,           _______, _______, _______, _______, _______, NK_TOGG, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
+    KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
+    _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
     _______, _______,  _______,                    QK_LLCK,                           _______,  _______,  MO(SYS_FN),  _______),
 
   [WIN_FN] = LAYOUT_ansi_61(
-    KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   RM_VALD, RM_VALU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  RM_NEXT,
-    RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
-    _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
-    _______,           _______, _______, _______, _______, _______, NK_TOGG, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
+    KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
+    _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
     _______, _______,  _______,                            QK_LLCK,                            _______, _______,  MO(SYS_FN),  _______),
 
+  // Keyboard settings on the left hand, mouse keys on the right.
   [SHR_FN] = LAYOUT_ansi_61(
     KC_TILD, KC_F1,    KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,   KC_F11,   KC_F12,   _______,
-    RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, _______,  _______,  _______,  _______,
-    _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, _______, _______, _______,  _______,            _______,
-    _______,           _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______,            _______,
+    RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, MS_WHLU, MS_BTN1, MS_BTN3, MS_BTN2,  _______,  _______,  _______,
+    _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, MS_LEFT, MS_DOWN, MS_UP,   MS_RGHT, _______,  _______,            _______,
+    _______,           _______, _______, _______, _______, NK_TOGG, MS_WHLD, MS_ACL0, MS_ACL1, MS_ACL2,  _______,            _______,
     _______, _______,  _______,                             QK_LLCK,                           _______,  MO(SYS_FN),  _______,  _______),
 
   [SYS_FN] = LAYOUT_ansi_61(
@@ -200,10 +330,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LCTL, KC_LOPT, KC_LCMD,                        QK_LLCK,             KC_RCMD, _______, _______, _______),
 
   [VI] = LAYOUT_ansi_61(
-     KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS, KC_EQL,  KC_BSPC,
-     KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP,  VI_INS,  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
-    _______, KC_MSTP, KC_MPLY, KC_PGDN, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
-    _______,   KC_NO,  KC_DEL,   KC_NO, _______, VI_BACK, KC_PGDN,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______,
+     KC_GRV,    KC_1,    KC_2,    KC_3,    VI_4,    KC_5,    VI_6,    KC_7,    KC_8,    KC_9,    VI_0, KC_MINS,  KC_EQL, _______,
+     KC_TAB,   KC_NO,    VI_W,    VI_E,    VI_R,   KC_NO,    VI_Y,    VI_U,    VI_I,    VI_O,    VI_P,   KC_NO,   KC_NO, _______,
+    _______,    VI_A,   KC_NO,    VI_D,    VI_F,    VI_G,    VI_H,    VI_J,    VI_K,    VI_L,   KC_NO,   KC_NO,   RCTL_T(KC_ENT),
+    _______,   KC_NO,    VI_X,   KC_NO,    VI_V,    VI_B,    VI_N,   KC_NO,   KC_NO,  QK_REP, C(KC_F), _______,
     KC_LCTL, KC_LOPT, KC_LCMD,                   _______,                   KC_RCMD, _______, _______, KC_RCTL)
 
 };
@@ -263,21 +393,27 @@ static rgb_t color_for_keycode(uint16_t kc) {
   switch (kc) {
     case KC_LEFT: case KC_DOWN: case KC_UP: case KC_RGHT:
     case KC_HOME: case KC_END:
+    case VI_H: case VI_J: case VI_K: case VI_L: case VI_0:
       return (rgb_t){RGB_GREEN};                      // navigation
-    case KC_PGUP: case KC_PGDN: case VI_WORD: case VI_BACK:
-      return (rgb_t){RGB_BLUE};                       // page / word jumps
+    case KC_PGUP: case KC_PGDN:
+    case VI_W: case VI_E: case VI_B: case VI_F: case VI_G: case VI_4: case VI_6:
+      return (rgb_t){RGB_BLUE};                       // page / word / line jumps
     case KC_MPRV: case KC_MPLY: case KC_MNXT: case KC_MSTP: case KC_MUTE:
     case KC_VOLU: case KC_VOLD: case KC_BRIU: case KC_BRID:
       return (rgb_t){RGB_TEAL};                       // media
-    case KC_DEL: case QK_BOOT:
+    case KC_DEL: case QK_BOOT: case VI_X:
       return (rgb_t){RGB_RED};                        // destructive
-    case QK_LLCK: case VI_INS:
+    case VI_D: case VI_U: case VI_R: case VI_Y: case VI_P: case VI_V: case QK_REP:
+      return (rgb_t){RGB_MAGENTA};                    // edit / clipboard / visual
+    case QK_LLCK: case VI_I: case VI_A: case VI_O:
     case QK_MOMENTARY ... QK_MOMENTARY_MAX:
     case QK_TOGGLE_LAYER ... QK_TOGGLE_LAYER_MAX:
     case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
-      return (rgb_t){RGB_ORANGE};                     // layer / lock
+      return (rgb_t){RGB_ORANGE};                     // layer / lock / insert
     case RM_ON ... RM_SPDD:
       return (rgb_t){RGB_PURPLE};                     // RGB controls
+    case QK_MOUSE_CURSOR_UP ... QK_MOUSE_ACCELERATION_2:
+      return (rgb_t){RGB_CYAN};                       // mouse keys
     default:
       return (rgb_t){RGB_WHITE};
   }
@@ -318,7 +454,10 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         if (mapped) {
           const uint16_t kc = keymap_key_to_keycode(layer, pos);
           if (!is_passthrough(kc, base_kc)) {
-            const rgb_t c = color_for_keycode(kc);
+            // Visual mode: motions go magenta so the selection state is visible.
+            const rgb_t c = (vi_visual && layer == VI && is_vi_motion(kc))
+                                ? (rgb_t){RGB_MAGENTA}
+                                : color_for_keycode(kc);
             rgb_matrix_set_color(led, c.r, c.g, c.b);
             continue;
           }

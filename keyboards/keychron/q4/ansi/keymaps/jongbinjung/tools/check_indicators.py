@@ -29,14 +29,17 @@ MAPPED = {"MAC_FN", "WIN_FN", "SHR_FN", "SYS_FN", "NUMPAD", "FNPAD", "HHKB_FN", 
 # c2json keeps aliases as written; the firmware compares numeric keycodes.
 ALIASES = {"KC_GRV": "KC_GRAVE", "KC_RIGHT": "KC_RGHT", "KC_LOPT": "KC_LALT",
            "KC_ROPT": "KC_RALT", "KC_LCMD": "KC_LGUI", "KC_RCMD": "KC_RGUI",
-           "QK_BOOT": "QK_BOOTLOADER", "QK_LAYER_LOCK": "QK_LLCK"}
+           "QK_BOOT": "QK_BOOTLOADER", "QK_LAYER_LOCK": "QK_LLCK",
+           "QK_REPEAT_KEY": "QK_REP"}
 
-GREEN = {"KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", "KC_HOME", "KC_END"}
-BLUE = {"KC_PGUP", "KC_PGDN", "VI_WORD", "VI_BACK"}
+GREEN = {"KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", "KC_HOME", "KC_END",
+         "VI_H", "VI_J", "VI_K", "VI_L", "VI_0"}
+BLUE = {"KC_PGUP", "KC_PGDN", "VI_W", "VI_E", "VI_B", "VI_F", "VI_G", "VI_4", "VI_6"}
 TEAL = {"KC_MPRV", "KC_MPLY", "KC_MNXT", "KC_MSTP", "KC_MUTE",
         "KC_VOLU", "KC_VOLD", "KC_BRIU", "KC_BRID"}
-RED = {"KC_DEL", "QK_BOOTLOADER"}
-AMBER = {"QK_LLCK", "VI_INS"}
+RED = {"KC_DEL", "QK_BOOTLOADER", "VI_X"}
+MAGENTA = {"VI_D", "VI_U", "VI_R", "VI_Y", "VI_P", "VI_V", "QK_REP"}
+AMBER = {"QK_LLCK", "VI_I", "VI_A", "VI_O"}
 TAP_RE = re.compile(r"^(?:LT\(\w+,|[LR]?(?:CTL|SFT|ALT|GUI|CMD|OPT)_T\()(\w+)\)$")
 
 
@@ -65,10 +68,14 @@ def color(kc):
         return "teal"
     if kc in RED:
         return "red"
+    if kc in MAGENTA:
+        return "magenta"
     if kc in AMBER or re.match(r"^(MO|TG|LT)\(", kc):
         return "amber"
     if kc.startswith("RM_"):
         return "purple"
+    if kc.startswith("MS_"):
+        return "cyan"
     return "white"
 
 
@@ -91,7 +98,7 @@ def main():
         for key, c in lit.items():
             by_color.setdefault(c, []).append(key)
         print(f"{name}:")
-        for c in ["green", "blue", "teal", "red", "amber", "purple", "white"]:
+        for c in ["green", "blue", "teal", "red", "magenta", "amber", "purple", "cyan", "white"]:
             if c in by_color:
                 print(f"  {c:6} {' '.join(by_color[c])}")
         # No key whose entry is transparent/none may ever be lit.
@@ -104,13 +111,21 @@ def main():
     hhkb = lit_map(layers, "HHKB_FN", "MAC_BASE")
     fnpad = lit_map(layers, "FNPAD", "MAC_BASE")
     sysfn = lit_map(layers, "SYS_FN", "MAC_BASE")
+    shr = lit_map(layers, "SHR_FN", "MAC_BASE")
+    macfn = lit_map(layers, "MAC_FN", "MAC_BASE")
     expect = [
         (vi.get("I") == "amber", "VI lights I amber (the unlock key)"),
         (not {"U", "W", "B"} & hhkb.keys(), "HHKB_FN leaves U W B dark"),
         ("N" not in fnpad, "FNPAD leaves N dark"),
         (sysfn == {"Fn3": "red"}, "SYS_FN lights only Fn3, red"),
         (vi.get("Esc") is None, "VI Esc/Ctrl is a pass-through (override paints it)"),
-        (lit_map(layers, "MAC_FN", "MAC_BASE").get("Tab") == "purple", "MAC_FN Tab (RGB toggle) is purple"),
+        (vi.get("4") == "blue" and vi.get("6") == "blue", "VI $ and ^ (4, 6) are blue"),
+        (vi.get(".") == "magenta" and vi.get("U") == "magenta", "VI . and u are magenta"),
+        (vi.get("A") == "amber", "VI a (append) is amber"),
+        ("S" not in vi and "Bksp" not in vi, "VI leaves S and Backspace dark"),
+        (shr.get("Tab") == "purple", "SHR_FN Tab (RGB toggle) is purple"),
+        (shr.get("J") == "cyan" and shr.get("B") == "white", "SHR_FN J is cyan (mouse), B white (NKRO)"),
+        ("Q" not in macfn and "Tab" not in macfn, "MAC_FN leaves Q and Tab dark (RGB moved off)"),
     ]
     for ok, msg in expect:
         print(("PASS " if ok else "FAIL ") + msg)
