@@ -99,6 +99,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
       break;
+
+    case RM_TOGG:
+      // Guard: on a *locked* Fn layer, Tab is RM_TOGG. A stray press turns RGB
+      // off, QMK persists that to EEPROM, and every indicator (including the
+      // amber lock light) disappears with it, surviving reflashes. Only honour
+      // the toggle while the layer is physically held; the other RGB keys
+      // (hue, brightness, speed, mode) stay usable when locked.
+      if (is_layer_locked(get_highest_layer(layer_state))) {
+        return false;
+      }
+      break;
   }
   return true;
 };
