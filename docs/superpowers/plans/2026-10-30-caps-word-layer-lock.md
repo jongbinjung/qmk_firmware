@@ -213,7 +213,7 @@ becomes
 
 - [ ] **Step 3: Handle VI_INS and the Esc tap in process_record_user**
 
-Inside `process_record_user`, after the `case VI_BACK:` block's `break;` (line 79) and before the closing `}` of the `switch`, add:
+Inside `process_record_user`, after the `case VI_BACK:` block's `break;` and before the closing `}` of the `switch`, add:
 
 ```c
 
@@ -702,14 +702,14 @@ Expected:
 ```
 MAC_BASE space: LT(VI,KC_SPC) | I: KC_I | Tab: LT(NUMPAD,KC_TAB) | Esc/Ctrl: LCTL_T(KC_ESC)
 WIN_BASE space: LT(VI,KC_SPC) | I: KC_I | Tab: LT(NUMPAD,KC_TAB) | Esc/Ctrl: LCTL_T(KC_ESC)
-MAC_FN   space: QK_LLCK | I: KC_TRNS | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
-WIN_FN   space: QK_LLCK | I: KC_APP | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
-SHR_FN   space: QK_LLCK | I: KC_TRNS | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
-SYS_FN   space: KC_TRNS | I: KC_TRNS | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
-NUMPAD   space: QK_LLCK | I: KC_5 | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
-FNPAD    space: QK_LLCK | I: KC_F5 | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
-HHKB_FN  space: QK_LLCK | I: KC_NO | Tab: KC_CAPS | Esc/Ctrl: KC_TRNS
-VI       space: KC_TRNS | I: VI_INS | Tab: KC_TAB | Esc/Ctrl: KC_TRNS
+MAC_FN space: QK_LLCK | I: KC_TRNS | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
+WIN_FN space: QK_LLCK | I: KC_APP | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
+SHR_FN space: QK_LLCK | I: KC_TRNS | Tab: RM_TOGG | Esc/Ctrl: KC_TRNS
+SYS_FN space: KC_TRNS | I: KC_TRNS | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
+NUMPAD space: QK_LLCK | I: KC_5 | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
+FNPAD space: QK_LLCK | I: KC_F5 | Tab: KC_TRNS | Esc/Ctrl: KC_TRNS
+HHKB_FN space: QK_LLCK | I: KC_NO | Tab: KC_CAPS | Esc/Ctrl: KC_TRNS
+VI space: KC_TRNS | I: VI_INS | Tab: KC_TAB | Esc/Ctrl: KC_TRNS
 ```
 (`LT(VI,KC_SPC)` may print with a space after the comma for WIN_BASE; that is fine.) Then open the readme and the c2json output side by side and walk each of the ten diagrams row by row, confirming every non-blank label corresponds to the keycode in that position. Fix any mismatch in the readme, not the keymap.
 
