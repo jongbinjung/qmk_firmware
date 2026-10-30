@@ -268,12 +268,13 @@ nothing on that layer.
 
 ### Caps Word
 
-- Hold **both shifts** together for at least 200 ms, then release. The Esc/Ctrl
-  key lights yellow.
+- Hold **both shifts** together for at least 200 ms, then release. All letter
+  keys glow yellow while it is on.
 - Letters come out shifted and `-` becomes `_` until you type a space,
   punctuation, or go idle for 5 seconds.
 - Caps Word never sends Caps Lock to the host, so a host-side Caps Lock remap
-  is unaffected. The literal Caps Lock key is still Fn3+Tab (white LED).
+  is unaffected. The literal Caps Lock key is still Fn3+Tab; while host Caps
+  Lock is on, all letter keys glow white.
 - Releasing both shifts within 200 ms also fires the Space Cadet tap on the
   second shift and types a stray `)`. Hold a beat longer to avoid it.
 
@@ -294,6 +295,22 @@ nothing on that layer.
 - Hold grave (Mac base): F4/F5/F6 on U/I/O and F1/F2/F3 on J/K/L, with F1 to
   F12 on the number row.
 - Lock either one with Space when entering a lot of numbers.
+
+### Lighting
+
+- On NUMPAD, FNPAD, HHKB_FN, VI and SYS_FN the animation is replaced by a map
+  of the layer: keys that do something on the layer light up, everything else
+  is dark. Keys that merely repeat the base layer stay dark too. The map is
+  derived from the keymap, so remapping a key updates its light.
+- Colours: green navigation (arrows, Home, End), blue page and word jumps,
+  teal media, red Delete and bootloader, amber layer and lock keys, purple RGB
+  controls, white anything else that is bound.
+- A locked layer's activator key (Tab, grave, Space, Fn1, Fn2 or Fn3) is amber.
+- Caps Lock glows all letters white; Caps Word glows them yellow. On a mapped
+  layer, letters that are bound keep their layer colour and only the
+  pass-through letters glow.
+- `tools/check_indicators.py` prints the expected map from the compiled keymap:
+  `qmk c2json -kb keychron/q4/ansi/v2 -km jongbinjung <keymap.c> | python3 -I tools/check_indicators.py`.
 
 ### RGB
 
