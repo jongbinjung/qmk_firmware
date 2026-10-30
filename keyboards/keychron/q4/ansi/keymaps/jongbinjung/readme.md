@@ -20,14 +20,14 @@ pick the variant. Flash with `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`
 |----------|-----------------------------------|----------|---------|
 | MAC_BASE | DIP switch set to Mac             | no       | Base layer, Opt/Cmd modifiers |
 | WIN_BASE | DIP switch set to Windows         | no       | Base layer, Win/Alt modifiers. No FPAD layer-tap on grave |
-| MAC_FN   | hold Fn1 (Mac base)               | yes      | Media, brightness, RGB, arrows, nav |
+| MAC_FN   | hold Fn1 (Mac base)               | yes      | OS: media, brightness, arrows, nav, Del |
 | WIN_FN   | hold Fn1 (Windows base)           | yes      | Same as MAC_FN plus Menu, PrtSc, ScrLk |
-| SHR_FN   | hold Fn2                          | yes      | F-keys on the number row, RGB |
+| SHR_FN   | hold Fn2                          | yes      | Keyboard: RGB, NKRO; mouse keys on the right hand; F-keys on the number row |
 | SYS_FN   | hold Fn1 then Fn2 (or Fn2 then Fn1) | no     | Bootloader on Fn3 |
 | NUMPAD   | hold Tab                          | yes      | Numpad on U/I/O, J/K/L, N/M |
 | FNPAD    | hold grave (Mac base only)        | yes      | F1 to F6 on the same keys as the numpad |
 | HHKB_FN  | hold Fn3                          | yes      | HHKB Fn layer: F-keys, nav on [ ; ' /, media on A/S/D, Caps Lock on Tab |
-| VI       | hold Space, or lock with Space+Esc | yes     | vi-style navigation: H/J/K/L arrows, w/b word jumps |
+| VI       | hold Space, or lock with Space+Esc | yes     | vi normal mode: hjkl, w/b/e, 0 ^ $, g/G, x, u, y/p, visual mode on v |
 
 Key labels in the diagrams: top line is the tap action, bottom line is the hold
 action. Blank keys fall through to the layer below. `x` means the key does
@@ -78,16 +78,16 @@ nothing on that layer.
 ### MAC_FN: hold Fn1 on the Mac base (Space locks)
 ```
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----------+
-|  `  | Bri-| Bri+|  x  |  x  | Val-| Val+| |<< | >|| | >>| | Mute| Vol-| Vol+|    Mod+   |
+|  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|  RGB   | Mod+| Val+| Hue+| Sat+| Spd+|     |     |     |     | Ins | PgUp| Home|        |
+|        |     |     |     |     |     |     |     |     |     | Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         | Mod-| Val-| Hue-| Sat-| Spd-|     |     |  Up |  x  | PgDn| End |             |
+|         |     |     |     |     |     |     |     |  Up |  x  | PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     | NKRO| Left| Down| Rght| Del |               |
+|             |     |     |     |     |     |     | Left| Down| Rght| Del |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       |      | SYS  |       |
@@ -98,16 +98,16 @@ nothing on that layer.
 ### WIN_FN: hold Fn1 on the Windows base (Space locks)
 ```
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----------+
-|  `  | Bri-| Bri+|  x  |  x  | Val-| Val+| |<< | >|| | >>| | Mute| Vol-| Vol+|    Mod+   |
+|  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|  RGB   | Mod+| Val+| Hue+| Sat+| Spd+|     |     | Menu| ScrL| Ins | PgUp| Home|        |
+|        |     |     |     |     |     |     |     | Menu| ScrL| Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         | Mod-| Val-| Hue-| Sat-| Spd-|     |     |  Up | PrSc| PgDn| End |             |
+|         |     |     |     |     |     |     |     |  Up | PrSc| PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     | NKRO| Left| Down| Rght| Del |               |
+|             |     |     |     |     |     |     | Left| Down| Rght| Del |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       |      | SYS  |       |
@@ -115,19 +115,19 @@ nothing on that layer.
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 ```
 
-### SHR_FN: hold Fn2 (Space locks)
+### SHR_FN: hold Fn2 (Space locks) — keyboard settings + mouse
 ```
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----------+
 |  ~  |  F1 |  F2 |  F3 |  F4 |  F5 |  F6 |  F7 |  F8 |  F9 | F10 | F11 | F12 |           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|  RGB   | Mod+| Val+| Hue+| Sat+| Spd+|     |     |     |     |     |     |     |        |
+|  RGB   | Mod+| Val+| Hue+| Sat+| Spd+|     | WhUp| LClk| MClk| RClk|     |     |        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         | Mod-| Val-| Hue-| Sat-| Spd-|     |     |     |     |     |     |             |
+|         | Mod-| Val-| Hue-| Sat-| Spd-| MsL | MsDn| MsUp| MsR |     |     |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     |     |     |     |     |     |               |
+|             |     |     |     |     | NKRO| WhDn| Slow| Med | Fast|     |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       | SYS  |      |       |
@@ -215,25 +215,29 @@ nothing on that layer.
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 ```
 
-### VI: hold Space (Space+Esc locks, I unlocks)
+### VI: hold Space (Space+Esc locks; i, a, o unlock)
 ```
 +-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----------+
-|  `  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  |  -  |  =  |    Bksp   |
-|     |     |     |     |     |     |     |     |     |     |     |     |     |           |
+|  `  |  1  |  2  |  3  |  x  |  5  |  x  |  7  |  8  |  9  | Home|  -  |  =  |           |
+|     |     |     |     | $End|     |^Home|     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|  Tab   |     |  w> |     |     |     |     | PgUp| ins | End |  x  | PgDn|  Up |  Del   |
-|        |     |     |     |     |     |     |     |     |     |     |     |     |        |
+|  Tab   |  x  |  w> |  e> |  x  |  x  | yank| undo| ins | open| pste|  x  |  x  |        |
+|        |     |     |     |     |     |     | redo| ^ins|above|     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|   lock  | Stop| >|| |PgDn | >>| |     | Left| Down|  Up | Rght|     |     |     Ent     |
-|   Ctl   |     |     |     |     |     |     |     |     |     |     |     |     Ctl     |
+|   lock  | ins>|  x  | cut |  x  | Top | Left| Down|  Up | Rght|  x  |  x  |     Ent     |
+|   Ctl   | ins$|     |     |     | Bot |     |     |     |     |     |     |     Ctl     |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |  x  | Del |  x  |     |  <b | PgDn|  x  |  x  |  x  |  x  |               |
-|             |     |     |     |     |     |     |     |     |     |     |               |
+|             |  x  | del |  x  | vis |  <b | next|  x  |  x  | rep | find|               |
+|             |     | bksp|     | line|     | prev|     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |  Ctrl | Opt  | Cmd  |                                     |  Cmd  |      |      |  Ctrl |
 |       |      |      |                                     |       |      |      |       |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 ```
+Second line = with Shift (`^ins` inserts at line start, `ins$` appends at line
+end, `above` opens a line above, `line` selects the whole line). With Esc held
+(Ctrl): b and u page up, f and d page down, r redoes. Keys marked `x` are dead
+in normal mode; Esc tap locks VI, or leaves visual mode if it is on.
 
 
 ## How to use it
@@ -249,22 +253,35 @@ nothing on that layer.
 - Any locked layer unlocks by itself after 60 seconds without a keypress.
 - Tapping Space too quickly after the layer key resolves the layer key as a
   tap (you get a Tab, a grave, or a space) instead of locking.
-- On a locked Fn layer the alpha block is RGB controls. The RGB toggle (Tab) is
-  ignored while locked, so a stray Tab cannot turn the lights off; hue,
+- On a locked Fn2 the Q–T and A–G keys are RGB controls. The RGB toggle (Tab)
+  is ignored while locked, so a stray Tab cannot turn the lights off; hue,
   brightness, speed and mode still work. Unlock first if you really want to
   toggle.
 
 ### VI mode
 
-- **Momentary:** hold Space, use H/J/K/L, release Space.
-- **Normal mode (lock):** hold Space, tap **Esc**, release Space. VI stays on
-  and the space bar lights amber. Esc in VI is idempotent: tapping it again does
-  nothing and sends no Escape.
-- **Insert mode (unlock):** tap **I**. Back to the base layer.
-- While VI is locked, tapping Space types a space. Holding the Esc/Ctrl key is
-  still Ctrl, so Ctrl+Enter and friends work inside VI.
-- `w>` and `<b` are Ctrl+Right and Ctrl+Left (word jumps). On macOS these
-  switch Spaces unless you remap them; Option+Arrow is the native word jump.
+Hold Space for a momentary normal mode, or hold Space and tap **Esc** to lock
+it (the space bar lights amber). Everything below assumes VI is active.
+
+- **Motions:** h j k l arrows; w and e word forward, b word back (Ctrl+Arrow
+  on the host); 0 and ^ line start, $ line end; g top of document, G bottom.
+  Hold Esc for the vi Ctrl chords: Ctrl+b / Ctrl+u page up, Ctrl+f / Ctrl+d
+  page down. Shift+motion is the host's own selection. Esc+l and friends are
+  the host's Ctrl+Arrow, so Ctrl shortcuts still work inside VI.
+- **Operators:** x Delete, X Backspace, d cut, y copy, p paste, u undo, U or
+  Ctrl+r redo. `/` opens find, n and N jump to the next and previous match,
+  `.` repeats the last key (QMK Repeat Key, not a full vi dot-repeat).
+- **Insert (leave VI):** i, a (after cursor), I (line start), A (line end),
+  o (open line below), O (open line above). Each unlocks VI; while VI is only
+  held, they just send their motion.
+- **Visual mode:** v starts it, V selects the current line first. Motions now
+  extend the selection and their lights turn magenta. y, d, x, p or u act on
+  the selection and drop back to normal; v or Esc cancel. Releasing Space, or
+  leaving VI any other way, also cancels.
+- Letters with no vi meaning are dead in normal mode, so VI never types text.
+  The number row still types digits (counts are not supported). While VI is
+  locked, tapping Space types a space.
+- All shortcuts use Ctrl; macOS is expected to remap Ctrl to Cmd.
 
 ### Caps Word
 
@@ -296,15 +313,23 @@ nothing on that layer.
   F12 on the number row.
 - Lock either one with Space when entering a lot of numbers.
 
+### Mouse keys
+
+- Hold Fn2: H/J/K/L move the pointer, U and N scroll up and down, I is left
+  click, O middle, P right. Hold M, `,` or `.` while moving for slow, medium
+  or fast speed. Lock with Space for longer mouse work.
+
 ### Lighting
 
 - On every layer except the two bases the animation is replaced by a map of
   the layer: keys that do something on the layer light up, everything else is
   dark. Keys that merely repeat the base layer stay dark too. The map is
   derived from the keymap, so remapping a key updates its light.
-- Colours: green navigation (arrows, Home, End), blue page and word jumps,
-  teal media, red Delete and bootloader, amber layer and lock keys, purple RGB
-  controls, white anything else that is bound.
+- Colours: green navigation (arrows, Home, End, hjkl), blue page, word and
+  line jumps, teal media, red Delete, x and bootloader, magenta edit keys
+  (cut, copy, paste, undo, visual, repeat), amber layer, lock and insert keys,
+  purple RGB controls, cyan mouse keys, white anything else that is bound.
+  In VI visual mode the motion keys turn magenta.
 - A locked layer's activator key (Tab, grave, Space, Fn1, Fn2 or Fn3) is amber.
 - Caps Lock glows all letters white; Caps Word glows them yellow. On a mapped
   layer, letters that are bound keep their layer colour and only the
@@ -312,14 +337,16 @@ nothing on that layer.
 - `tools/check_indicators.py` prints the expected map from the compiled keymap:
   `qmk c2json -kb keychron/q4/ansi/v2 -km jongbinjung <keymap.c> | python3 -I tools/check_indicators.py`.
 
-### RGB
+### RGB and keyboard settings
 
-- Fn1 or Fn2 then the Q/W/E/R/T row: mode next, brightness up, hue up,
-  saturation up, speed up. The A/S/D/F/G row is the same, going down.
-- Fn1+Tab or Fn2+Tab (held, not locked) toggles RGB. The toggle state is stored
-  in EEPROM and survives reflashing. Layer and Caps indicators do not render
-  while RGB is toggled off; lower the brightness instead if you want a dark
-  board with indicators.
+- Fn2 then the Q/W/E/R/T row: mode next, brightness up, hue up, saturation
+  up, speed up. The A/S/D/F/G row is the same, going down.
+- Fn2+Tab (held, not locked) toggles RGB. The toggle state is stored in EEPROM
+  and survives reflashing. Layer and Caps indicators do not render while RGB
+  is toggled off; lower the brightness instead if you want a dark board with
+  indicators.
+- Fn2+B toggles NKRO (n-key rollover: more than six keys at once). Also stored
+  in EEPROM. Off is the safer setting for BIOS screens and KVM switches.
 
 ### Mac vs Windows
 
@@ -336,7 +363,7 @@ nothing on that layer.
 - Build: `qmk compile -kb keychron/q4/ansi/v2 -km jongbinjung`.
 - Flash: `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`, then enter the
   bootloader when prompted.
-- **Lights dark, keys fine:** RGB is toggled off in EEPROM. Hold Fn1, tap Tab.
+- **Lights dark, keys fine:** RGB is toggled off in EEPROM. Hold Fn2, tap Tab.
   If that does nothing, use Bootmagic: unplug, hold the top-left (grave) key
   while plugging in. That clears EEPROM and enters the bootloader; flash v2
   again afterwards and RGB comes back at defaults.

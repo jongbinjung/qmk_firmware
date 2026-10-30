@@ -40,8 +40,8 @@ variant equals the plain one. Ctrl means the Esc key held (it is `LCTL_T`).
 
 | Key | plain | Shift | Ctrl | kind |
 |---|---|---|---|---|
-| h j k l | arrows (plain `KC_*` in keymap) | host selection | host shortcut | motion |
-| 0 | Home (`KC_HOME` in keymap) | | | motion |
+| h j k l | arrows (`VI_H`…`VI_L`, same mechanism as the other motions) | host selection | host shortcut | motion |
+| 0 | Home (`VI_0`) | | | motion |
 | 4 | | `$` → End | | motion |
 | 6 | | `^` → Home | | motion |
 | w | Ctrl+Right | same | | motion |
@@ -108,9 +108,11 @@ unshifted so that `$` and `^` have a home.
   (16-bit keycodes with `C()`/`S()` wrappers; 0 = send nothing) drives a single
   `process_vi_key()` dispatcher. `VI_O` and `VI_V` (multi-step) are handled in
   a short switch before the table.
-- Visual-mode shift for the plain arrow and Home keys on the VI layer is
-  applied by intercepting `KC_LEFT..KC_RGHT` and `KC_HOME` in
-  `process_record_user` when `layer_state_is(VI) && vi_visual`.
+- h j k l and 0 are custom keycodes (`VI_H VI_J VI_K VI_L VI_0`) in the same
+  table, so visual-mode shift and stuck-key safety share one code path.
+  Motions with an empty Ctrl column pass through with the physical Ctrl kept
+  (Esc+l is the host's Ctrl+Right); operators with an empty Ctrl column are
+  dead under Ctrl.
 - `layer_state_set_user` clears `vi_visual` whenever VI leaves the state
   (space released, I/a/o unlock, idle timeout).
 - The existing `LCTL_T(KC_ESC)` tap case gains: if `vi_visual`, clear it and
@@ -122,8 +124,8 @@ unshifted so that `$` and `^` have a home.
 - Colour categories gain **magenta** for the edit family: `VI_X` stays red
   (destructive) but `VI_U, VI_R, VI_Y, VI_P, VI_D, VI_V, QK_REP` are magenta.
   `VI_W, VI_E, VI_B, VI_F, VI_G, VI_4, VI_6` are blue (jumps), `VI_D` is magenta,
-  `VI_N` and `C(KC_F)` are white, `VI_I, VI_A, VI_O` are orange (they leave
-  the layer, like `VI_INS` today).
+  `VI_H…VI_L` and `VI_0` are green, `VI_N` and `C(KC_F)` are white,
+  `VI_I, VI_A, VI_O` are orange (they leave the layer, like `VI_INS` today).
 - **Visual mode cue**: while `vi_visual` is on, every VI key the generic pass
   painted green or blue (the motions) is repainted magenta. Runtime only; the
   checker cannot see it.
