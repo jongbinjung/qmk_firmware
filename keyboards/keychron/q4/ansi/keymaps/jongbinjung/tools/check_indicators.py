@@ -24,7 +24,7 @@ LABELS = ("` 1 2 3 4 5 6 7 8 9 0 - = \\ "
           "Esc A S D F G H J K L ; ' Ent "
           "LSft Z X C V B N M , . / RSft "
           "LCtl Opt Cmd Spc RCmd Fn1 Fn2 Fn3").split()
-MAPPED = {"NUMPAD", "FNPAD", "HHKB_FN", "VI", "SYS_FN"}
+MAPPED = {"MAC_FN", "WIN_FN", "SHR_FN", "SYS_FN", "NUMPAD", "FNPAD", "HHKB_FN", "VI"}
 
 # c2json keeps aliases as written; the firmware compares numeric keycodes.
 ALIASES = {"KC_GRV": "KC_GRAVE", "KC_RIGHT": "KC_RGHT", "KC_LOPT": "KC_LALT",
@@ -85,7 +85,7 @@ def lit_map(layers, layer_name, base_name):
 def main():
     layers = json.load(sys.stdin)["layers"]
     failures = []
-    for name in ["NUMPAD", "FNPAD", "HHKB_FN", "VI", "SYS_FN"]:
+    for name in ["MAC_FN", "WIN_FN", "SHR_FN", "SYS_FN", "NUMPAD", "FNPAD", "HHKB_FN", "VI"]:
         lit = lit_map(layers, name, "MAC_BASE")
         by_color = {}
         for key, c in lit.items():
@@ -110,6 +110,7 @@ def main():
         ("N" not in fnpad, "FNPAD leaves N dark"),
         (sysfn == {"Fn3": "red"}, "SYS_FN lights only Fn3, red"),
         (vi.get("Esc") is None, "VI Esc/Ctrl is a pass-through (override paints it)"),
+        (lit_map(layers, "MAC_FN", "MAC_BASE").get("Tab") == "purple", "MAC_FN Tab (RGB toggle) is purple"),
     ]
     for ok, msg in expect:
         print(("PASS " if ok else "FAIL ") + msg)

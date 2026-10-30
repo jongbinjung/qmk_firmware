@@ -31,11 +31,12 @@ exactly as they are, drawn after the generic pass.
 
 ### Which layers
 
-The same set the old code handled: `NUMPAD`, `FNPAD`, `HHKB_FN`, `VI`,
-`SYS_FN`. On these the background animation is replaced by the key map (every
-LED in the chunk is set). `MAC_FN`, `WIN_FN`, `SHR_FN` and the base layers are
-untouched: the animation shows through, as today. The set is a bitmask constant
-so adding a layer is a one-token change.
+All layers except the two bases: `MAC_FN`, `WIN_FN`, `SHR_FN`, `SYS_FN`,
+`NUMPAD`, `FNPAD`, `HHKB_FN`, `VI`. On these the background animation is
+replaced by the key map (every LED in the chunk is set). The base layers are
+untouched: the animation shows through. The set is a bitmask constant.
+(Originally only the last five; the three Fn layers were added the same day at
+the user's request.)
 
 ### Per-LED rule
 

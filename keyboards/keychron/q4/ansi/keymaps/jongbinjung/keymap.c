@@ -218,10 +218,11 @@ static void set_indicator(uint8_t led_min, uint8_t led_max, uint8_t led,
 }
 
 // Layers whose lighting is derived from the keymap: every LED in the chunk is
-// set, replacing the animation. The Fn layers and the bases are left to the
+// set, replacing the animation. Only the base layers are left to the
 // animation. Add a layer here to give it the same treatment.
 static const layer_state_t mapped_layers =
-    (1UL << NUMPAD) | (1UL << FNPAD) | (1UL << HHKB_FN) | (1UL << VI) | (1UL << SYS_FN);
+    (1UL << MAC_FN) | (1UL << WIN_FN) | (1UL << SHR_FN) | (1UL << SYS_FN) |
+    (1UL << NUMPAD) | (1UL << FNPAD) | (1UL << HHKB_FN) | (1UL << VI);
 
 // Which LED to light (amber) when a layer is locked: its activator key.
 static const struct { uint8_t layer; uint8_t led; } lock_leds[] = {

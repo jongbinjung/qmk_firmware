@@ -298,9 +298,9 @@ nothing on that layer.
 
 ### Lighting
 
-- On NUMPAD, FNPAD, HHKB_FN, VI and SYS_FN the animation is replaced by a map
-  of the layer: keys that do something on the layer light up, everything else
-  is dark. Keys that merely repeat the base layer stay dark too. The map is
+- On every layer except the two bases the animation is replaced by a map of
+  the layer: keys that do something on the layer light up, everything else is
+  dark. Keys that merely repeat the base layer stay dark too. The map is
   derived from the keymap, so remapping a key updates its light.
 - Colours: green navigation (arrows, Home, End), blue page and word jumps,
   teal media, red Delete and bootloader, amber layer and lock keys, purple RGB
