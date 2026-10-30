@@ -61,6 +61,22 @@ For each matrix position whose LED index falls in `[led_min, led_max)`:
   | RGB controls | `RM_ON` through `RM_SPDD` | `RGB_PURPLE` |
   | Everything else bound | digits, F-keys, Esc, Tab, Caps, brackets, Enter, punctuation, NKRO, modifiers | `RGB_WHITE` |
 
+### Caps glow (Caps Lock and Caps Word)
+
+Replaces the single-LED Caps indicator on the Esc/Ctrl key. When host Caps
+Lock is on, every letter key (`KC_A` to `KC_Z` on the base layer) glows
+`RGB_WHITE`; when Caps Word is on, `RGB_YELLOW`. Caps Lock wins if both are on.
+
+Interaction with the layer map, decided per LED inside the same loop:
+
+- On a mapped layer, a letter that is **bound** on that layer (not a
+  pass-through) keeps its layer colour; the glow does not cover it. A letter
+  that is a pass-through glows instead of going dark.
+- On an unmapped layer (base, MAC_FN, WIN_FN, SHR_FN), letters glow over the
+  animation and all other LEDs are left to the animation.
+- Letter-ness is judged on the base layer entry, so it is the same set of
+  keys on every layer.
+
 ### Overrides
 
 A small table of `{layer, led, colour}` painted after the generic pass, for
@@ -77,12 +93,17 @@ in this table rather than back into per-layer blocks.
 - `static rgb_t color_for_keycode(uint16_t kc)`: the category switch above,
   returning a `rgb_t` (QMK's `{r, g, b}` struct).
 - `static bool is_passthrough(uint16_t kc, uint16_t base)`: the dark rule.
+- `static bool caps_glow(rgb_t *out)`: true with white if host Caps Lock is
+  on, else true with yellow if `is_caps_word_on()`, else false.
 - `static const uint16_t mapped_layers`: bitmask of the five layers.
 - `static const struct { uint8_t layer; uint8_t led; rgb_t color; } overrides[]`.
-- In `rgb_matrix_indicators_advanced_user`: if the active layer is in
-  `mapped_layers`, run the matrix loop, then the overrides via the existing
-  `set_indicator` helper. Then the existing lock and caps indicators. Return
-  `false` as today.
+- In `rgb_matrix_indicators_advanced_user`: one matrix loop over LEDs in the
+  chunk. For each: if the layer is mapped and the key is bound, paint the
+  category colour. Else if caps glow is active and the base entry is a letter,
+  paint the glow. Else if the layer is mapped, paint `RGB_OFF`; otherwise leave
+  the LED to the animation. Then the overrides (only when the layer is
+  mapped), then the existing Layer Lock indicator. The old single-LED Caps
+  block is removed. Return `false` as today.
 - The `switch` and its five cases are deleted. The `q4_index` enum stays (used
   by `lock_leds` and `overrides`).
 
@@ -105,6 +126,11 @@ in this table rather than back into per-layer blocks.
   bottom-row modifiers dark.
 - SYS_FN: Fn3 red. Everything else dark.
 
+Caps glow expected result: on the base layer with Caps Lock on, the 26 letter
+keys are white and everything else animates. With Caps Word on, yellow. In
+locked VI with Caps Word on, H J K L stay green, W B D blue, A S F teal, X red,
+I amber, and the remaining letters (Q E R T Y P G C V M) glow yellow.
+
 ## Verification
 
 - Both targets compile with no warnings.
@@ -114,3 +140,5 @@ in this table rather than back into per-layer blocks.
   N; no layer lights a key whose entry is `KC_TRNS` or `KC_NO`.
 - On the board: lock VI, confirm I is lit; hold Fn3, confirm the arrow cluster
   on the brackets, semicolon, quote and slash is green and U/W/B are dark.
+  Fn3+Tab: all letters white. Both shifts held: all letters yellow, then back
+  to the animation after a space.
