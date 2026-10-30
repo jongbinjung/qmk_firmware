@@ -27,3 +27,15 @@
 // (Esc/Ctrl, Enter/RCtrl) while leaving the layer-taps lazy.
 // https://docs.qmk.fm/tap_hold#hold-on-other-key-press
 #define HOLD_ON_OTHER_KEY_PRESS_PER_KEY
+
+// Layer Lock (QK_LLCK on the space position of every held layer). Auto-unlock
+// after a minute idle so a forgotten lock does not surprise you later.
+// https://docs.qmk.fm/features/layer_lock
+#define LAYER_LOCK_IDLE_TIMEOUT 60000
+
+// Caps Word is activated only by holding both (Space Cadet) shifts. No CW_TOGG
+// key is placed, so Fn3+Tab stays a literal Caps Lock for host-side remaps.
+// Hold both shifts past the tapping term before releasing, or the second
+// shift's Space Cadet tap types a stray ")".
+// https://docs.qmk.fm/features/caps_word
+#define BOTH_SHIFTS_TURNS_ON_CAPS_WORD
