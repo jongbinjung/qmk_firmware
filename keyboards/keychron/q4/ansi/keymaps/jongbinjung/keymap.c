@@ -97,6 +97,11 @@ bool get_hold_on_other_key_press(uint16_t keycode, keyrecord_t *record) {
   }
 }
 
+// Layer Lock convention: the space bar is QK_LLCK on every held layer except
+// VI (whose activator *is* space). Hold the layer key past TAPPING_TERM, tap
+// space, release: the layer stays on. Tap space again (or the layer's Fn key)
+// to unlock. VI locks via Esc and unlocks via I instead; see
+// process_record_user.
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [MAC_BASE] = LAYOUT_ansi_61(
     LT(FNPAD,KC_GRAVE),    KC_1,    KC_2, KC_3, KC_4, KC_5, KC_6, KC_7,    KC_8,   KC_9,       KC_0,    KC_MINS, KC_EQL,  KC_BSLS,
@@ -117,21 +122,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
     _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
     _______,           _______, _______, _______, _______, _______, NK_TOGG, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
-    _______, _______,  _______,                    TG(VI),                            _______,  _______,  MO(SYS_FN),  _______),
+    _______, _______,  _______,                    QK_LLCK,                           _______,  _______,  MO(SYS_FN),  _______),
 
   [WIN_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   RM_VALD, RM_VALU, KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  RM_NEXT,
     RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
     _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
     _______,           _______, _______, _______, _______, _______, NK_TOGG, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
-    _______, _______,  _______,                            _______,                            _______, _______,  MO(SYS_FN),  _______),
+    _______, _______,  _______,                            QK_LLCK,                            _______, _______,  MO(SYS_FN),  _______),
 
   [SHR_FN] = LAYOUT_ansi_61(
     KC_TILD, KC_F1,    KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,   KC_F11,   KC_F12,   _______,
     RM_TOGG, RM_NEXT,  RM_VALU, RM_HUEU, RM_SATU, RM_SPDU, _______, _______, _______, _______, _______,  _______,  _______,  _______,
     _______, RM_PREV,  RM_VALD, RM_HUED, RM_SATD, RM_SPDD, _______, _______, _______, _______, _______,  _______,            _______,
     _______,           _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______,            _______,
-    _______, _______,  _______,                             TG(VI),                            _______,  MO(SYS_FN),  _______,  _______),
+    _______, _______,  _______,                             QK_LLCK,                           _______,  MO(SYS_FN),  _______,  _______),
 
   [SYS_FN] = LAYOUT_ansi_61(
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
@@ -145,21 +150,21 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     _______, _______, _______, _______, _______, _______, _______, KC_4, KC_5,      KC_6, KC_BSPC,     KC_LBRC, KC_RBRC, KC_BSLS,
     _______, _______, _______, _______, _______, _______, _______, KC_1, KC_2,      KC_3, KC_KP_ENTER, _______, _______,
     _______, _______, _______, _______, _______, _______,    KC_0, KC_0, KC_COMM, KC_DOT, _______, _______,
-    _______, _______, _______,                            _______,                        _______, _______, _______, _______),
+    _______, _______, _______,                            QK_LLCK,                        _______, _______, _______, _______),
 
   [FNPAD] = LAYOUT_ansi_61(
     _______,   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,  KC_F10,  KC_F11,  KC_F12, _______,
     _______, _______, _______, _______, _______, _______, _______,   KC_F4,   KC_F5,   KC_F6, _______, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______,   KC_F1,   KC_F2,   KC_F3, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-    _______, _______, _______,                            _______,                        _______, _______, _______, _______),
+    _______, _______, _______,                            QK_LLCK,                        _______, _______, _______, _______),
 
   [HHKB_FN] = LAYOUT_ansi_61(
      KC_ESC,   KC_F1,   KC_F2,   KC_F3, KC_F4, KC_F5,   KC_F6, KC_F7,   KC_F8,   KC_F9,  KC_F10,   KC_F11,  KC_F12, KC_DEL,
     KC_CAPS,   KC_NO,   KC_NO,   KC_NO, KC_NO, KC_NO,   KC_NO, KC_NO,   KC_NO,   KC_NO,   KC_NO,    KC_UP,  KC_NO,  KC_DEL,
     _______, KC_VOLD, KC_VOLU, KC_MUTE, KC_NO, KC_NO,   KC_NO, KC_NO, KC_HOME, KC_PGUP, KC_LEFT, KC_RIGHT,  KC_ENT,
     _______,   KC_NO,  KC_DEL,   KC_NO, KC_NO, KC_NO, KC_PGDN, KC_NO,  KC_END, KC_PGDN, KC_DOWN,  _______,
-    KC_LCTL, KC_LOPT, KC_LCMD,                        _______,             KC_RCMD, _______, _______, _______),
+    KC_LCTL, KC_LOPT, KC_LCMD,                        QK_LLCK,             KC_RCMD, _______, _______, _______),
 
   [VI] = LAYOUT_ansi_61(
      KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS, KC_EQL,  KC_BSPC,
