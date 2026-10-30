@@ -48,7 +48,7 @@ variant equals the plain one. Ctrl means the Esc key held (it is `LCTL_T`).
 | e | Ctrl+Right | same | | motion |
 | b | Ctrl+Left | same | PgUp | motion |
 | f | | | PgDn | motion |
-| d | PgDn | | PgDn | motion; **visual: cut** (Ctrl+X) |
+| d | cut Ctrl+X | same | PgDn | operator (in visual, cuts the selection) |
 | u | undo Ctrl+Z | redo Ctrl+Shift+Z | PgUp | operator |
 | r | | | redo Ctrl+Shift+Z | operator |
 | g | Ctrl+Home | Ctrl+End | | motion |
@@ -104,7 +104,7 @@ unshifted so that `$` and `^` have a home.
 - New custom keycodes replace `VI_WORD`, `VI_BACK`, `VI_INS`:
   `VI_W, VI_E, VI_B, VI_F, VI_D, VI_U, VI_R, VI_G, VI_X, VI_Y, VI_P, VI_N,
   VI_I, VI_A, VI_O, VI_V, VI_4, VI_6`.
-- A `PROGMEM` table `vi_keys[]` of `{keycode, plain, shift, ctrl, visual, kind}`
+- A `PROGMEM` table `vi_keys[]` of `{keycode, plain, shift, ctrl, kind}`
   (16-bit keycodes with `C()`/`S()` wrappers; 0 = send nothing) drives a single
   `process_vi_key()` dispatcher. `VI_O` and `VI_V` (multi-step) are handled in
   a short switch before the table.
@@ -120,8 +120,8 @@ unshifted so that `$` and `^` have a home.
 ### Indicators
 
 - Colour categories gain **magenta** for the edit family: `VI_X` stays red
-  (destructive) but `VI_U, VI_R, VI_Y, VI_P, VI_V, QK_REP` are magenta.
-  `VI_W, VI_E, VI_B, VI_F, VI_D, VI_G, VI_4, VI_6` are blue (jumps),
+  (destructive) but `VI_U, VI_R, VI_Y, VI_P, VI_D, VI_V, QK_REP` are magenta.
+  `VI_W, VI_E, VI_B, VI_F, VI_G, VI_4, VI_6` are blue (jumps), `VI_D` is magenta,
   `VI_N` and `C(KC_F)` are white, `VI_I, VI_A, VI_O` are orange (they leave
   the layer, like `VI_INS` today).
 - **Visual mode cue**: while `vi_visual` is on, every VI key the generic pass
