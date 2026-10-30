@@ -197,17 +197,27 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-
-  // Indicators
-  if (host_keyboard_led_state().caps_lock) {
-    RGB_MATRIX_INDICATOR_SET_COLOR(CAPS_LOCK_LED_INDEX, 255, 255, 255);
-  } else {
-    if (!rgb_matrix_get_flags()) {
-      RGB_MATRIX_INDICATOR_SET_COLOR(CAPS_LOCK_LED_INDEX, 0, 0, 0);
-    }
+// Set one indicator LED only if it falls in this render chunk. Unlike the
+// RGB_MATRIX_INDICATOR_SET_COLOR macro, this accepts the RGB_* colour macros.
+static void set_indicator(uint8_t led_min, uint8_t led_max, uint8_t led,
+                          uint8_t r, uint8_t g, uint8_t b) {
+  if (led >= led_min && led < led_max) {
+    rgb_matrix_set_color(led, r, g, b);
   }
+}
 
+// Which LED to light (amber) when a layer is locked: its activator key.
+static const struct { uint8_t layer; uint8_t led; } lock_leds[] = {
+  {NUMPAD,  I_TAB},
+  {FNPAD,   I_ESC},   // I_ESC is the top-left (grave) key in this enum
+  {VI,      I_SPC},
+  {HHKB_FN, I_FN3},
+  {MAC_FN,  I_FN1},
+  {WIN_FN,  I_FN1},
+  {SHR_FN,  I_FN2},
+};
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
   switch(get_highest_layer(layer_state|default_layer_state)) {
 
     case NUMPAD:
@@ -359,6 +369,24 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
 
     default:
       break;
+  }
+
+  // Drawn after the per-layer blocks above, which first blank every LED in
+  // range, so these always win.
+
+  // Layer Lock state: light the locked layer's activator key amber.
+  for (uint8_t i = 0; i < ARRAY_SIZE(lock_leds); i++) {
+    if (is_layer_locked(lock_leds[i].layer)) {
+      set_indicator(led_min, led_max, lock_leds[i].led, RGB_ORANGE);
+    }
+  }
+
+  // Caps: host Caps Lock (literal key, Fn3+Tab) is white and wins; Caps Word
+  // (both shifts) is yellow. Caps Word never changes the host LED state.
+  if (host_keyboard_led_state().caps_lock) {
+    set_indicator(led_min, led_max, CAPS_LOCK_LED_INDEX, RGB_WHITE);
+  } else if (is_caps_word_on()) {
+    set_indicator(led_min, led_max, CAPS_LOCK_LED_INDEX, RGB_YELLOW);
   }
   return false;
 }
