@@ -125,7 +125,8 @@ def main():
         ("S" not in vi and "Bksp" not in vi, "VI leaves S and Backspace dark"),
         (shr.get("Tab") == "purple", "SHR_FN Tab (RGB toggle) is purple"),
         (shr.get("J") == "cyan" and shr.get("B") == "white", "SHR_FN J is cyan (mouse), B white (NKRO)"),
-        ("Q" not in macfn and "Tab" not in macfn, "MAC_FN leaves Q and Tab dark (RGB moved off)"),
+        ("Tab" not in macfn and macfn.get("Q") == "teal" and macfn.get("A") == "teal",
+         "MAC_FN Tab dark (RGB moved off); Q and A teal (left-hand media)"),
     ]
     for ok, msg in expect:
         print(("PASS " if ok else "FAIL ") + msg)

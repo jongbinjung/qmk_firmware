@@ -168,6 +168,11 @@ Windows extras (App, ScrLk, PrtSc), Space lock, Fn2 → `MO(SYS_FN)`.
 The `RM_TOGG`-while-locked guard in `process_record_user` still applies (Fn2
 locked + Tab).
 
+Follow-up (same day): the freed left hand becomes a media cluster for
+one-handed use while the right hand holds Fn1. Q/W/E/R = previous,
+play/pause, next, stop; A/S/D = volume down, volume up, mute (matching
+HHKB_FN). T, F, G stay transparent. The number-row media keys remain.
+
 ### Indicators
 
 - New colour **cyan** for mouse keys (`MS_UP … MS_ACL2`, i.e. the

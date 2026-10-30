@@ -20,7 +20,7 @@ pick the variant. Flash with `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`
 |----------|-----------------------------------|----------|---------|
 | MAC_BASE | DIP switch set to Mac             | no       | Base layer, Opt/Cmd modifiers |
 | WIN_BASE | DIP switch set to Windows         | no       | Base layer, Win/Alt modifiers. No FPAD layer-tap on grave |
-| MAC_FN   | hold Fn1 (Mac base)               | yes      | OS: media, brightness, arrows, nav, Del |
+| MAC_FN   | hold Fn1 (Mac base)               | yes      | OS: media on the left hand (Q/W/E/R transport, A/S/D volume) and number row, brightness, arrows, nav, Del |
 | WIN_FN   | hold Fn1 (Windows base)           | yes      | Same as MAC_FN plus Menu, PrtSc, ScrLk |
 | SHR_FN   | hold Fn2                          | yes      | Keyboard: RGB, NKRO; mouse keys on the right hand; F-keys on the number row |
 | SYS_FN   | hold Fn1 then Fn2 (or Fn2 then Fn1) | no     | Bootloader on Fn3 |
@@ -81,10 +81,10 @@ nothing on that layer.
 |  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|        |     |     |     |     |     |     |     |     |     | Ins | PgUp| Home|        |
+|        | |<< | >|| | >>| | Stop|     |     |     |     |     | Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         |     |     |     |     |     |     |     |  Up |  x  | PgDn| End |             |
+|         | Vol-| Vol+| Mute|     |     |     |     |  Up |  x  | PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
 |             |     |     |     |     |     |     | Left| Down| Rght| Del |               |
@@ -101,10 +101,10 @@ nothing on that layer.
 |  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|        |     |     |     |     |     |     |     | Menu| ScrL| Ins | PgUp| Home|        |
+|        | |<< | >|| | >>| | Stop|     |     |     | Menu| ScrL| Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         |     |     |     |     |     |     |     |  Up | PrSc| PgDn| End |             |
+|         | Vol-| Vol+| Mute|     |     |     |     |  Up | PrSc| PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
 |             |     |     |     |     |     |     | Left| Down| Rght| Del |               |

@@ -279,17 +279,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               SC_LSPO,    KC_Z,    KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM,  KC_DOT,    KC_SLSH,             SC_RSPC,
               KC_LCTL, KC_LGUI, KC_LALT,            LT(VI, KC_SPC),             KC_RALT, MO(WIN_FN), MO(SHR_FN), MO(HHKB_FN)),
 
+  // Left hand: media cluster for one-handed use while the right hand holds
+  // Fn1. A/S/D match HHKB_FN (Vol-, Vol+, Mute); Q/W/E/R are transport.
   [MAC_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,
-    _______, _______,  _______, _______, _______, _______, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
-    _______, _______,  _______, _______, _______, _______, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
+    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
+    _______, KC_VOLD,  KC_VOLU, KC_MUTE, _______, _______, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
     _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
     _______, _______,  _______,                    QK_LLCK,                           _______,  _______,  MO(SYS_FN),  _______),
 
   [WIN_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  _______,
-    _______, _______,  _______, _______, _______, _______, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
-    _______, _______,  _______, _______, _______, _______, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
+    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
+    _______, KC_VOLD,  KC_VOLU, KC_MUTE, _______, _______, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
     _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
     _______, _______,  _______,                            QK_LLCK,                            _______, _______,  MO(SYS_FN),  _______),
 
