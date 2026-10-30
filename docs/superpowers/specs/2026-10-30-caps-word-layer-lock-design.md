@@ -11,6 +11,8 @@ Add two core QMK features to the keymap:
 1. **Caps Word**, as a replacement for Caps Lock.
 2. **Layer Lock**, so any held layer can be pinned without holding its key, with
    the VI layer behaving like vi's normal/insert modes.
+3. A keymap **readme** with an ASCII diagram of every layer and short usage
+   guidelines, documenting the post-change keymap.
 
 Out of scope: the indicator-loop rewrite identified in the earlier review, the
 `VI_WORD`/`VI_BACK` OS-awareness change, and any RGB animation or timeout
@@ -137,6 +139,58 @@ first turn every LED in range off, then paint).
   `custom_keycodes`, the two `process_record_user` cases, and the indicator
   additions from section 4. Keep the existing comment style explaining why
   (TMK parity notes, vi mental model).
+- `readme.md` (new): see section 6.
+
+### 6. Keymap readme
+
+`keyboards/keychron/q4/ansi/keymaps/jongbinjung/readme.md`, hand-maintained
+Markdown with ASCII layer diagrams. It documents the keymap as it is after
+sections 1 to 4, not the current state.
+
+Diagrams:
+
+- One box diagram per layer, all ten, in the 61-key ANSI shape, each inside a
+  fenced code block. Rows and key widths follow the physical board so the
+  diagram reads like the keyboard.
+- Labels are human-readable, not keycodes: `Esc/Ctl` for `LCTL_T(KC_ESC)`,
+  `Tab/NUM` for `LT(NUMPAD,KC_TAB)`, `word>` for `VI_WORD`, `LOCK` for
+  `QK_LLCK`, `insert` for `VI_INS`, `CapsW` for `CW_TOGG`, `BOOT` for
+  `QK_BOOTLOADER`. Transparent keys are blank; `KC_NO` keys show `x`.
+- The first version is generated from `qmk c2json` output so it matches the
+  keymap exactly, then kept by hand. A one-line note at the top says the
+  diagrams are maintained manually and names the `c2json` command for
+  cross-checking.
+
+Sections, in order:
+
+1. **Layer overview table:** layer name, how it is reached (which key, held or
+   locked), one-line purpose. Notes that FNPAD and the Mac-only grave layer-tap
+   exist only on `MAC_BASE`, and that `MAC_BASE`/`WIN_BASE` are selected by the
+   DIP switch.
+2. **Layer diagrams:** the ten diagrams, base layers first, then Fn layers,
+   SYS_FN, NUMPAD, FNPAD, HHKB_FN, VI.
+3. **Guidelines:** short task-oriented entries:
+   - Layer Lock: hold a layer past 200 ms, tap Space to lock; Space or the
+     layer's Fn key to unlock; Tab/Grave layers unlock only via Space or the
+     60 s idle timeout; the activator key lights amber while locked.
+   - VI mode: hold Space for momentary; Space+Esc to lock (normal mode); I to
+     unlock (insert mode); Space types a space while locked; Esc/Ctrl held is
+     still Ctrl.
+   - Caps Word: Fn3+Tab or both shifts held past 200 ms; turns off on space or
+     punctuation or 5 s idle; Esc/Ctrl LED yellow while on.
+   - Tap-hold feel: Esc/Ctrl and Enter/Ctrl resolve to the modifier as soon as
+     another key is pressed (TMK-like); Space, Tab and Grave layer-taps are
+     lazy so fast rolls send the tapped key.
+   - Space Cadet shifts: tap for `(` and `)`, hold for Shift.
+   - Numpad and F-pad: Tab-held digits on U/I/O, J/K/L, M/N; Grave-held F-keys
+     in the same positions.
+   - RGB: the Fn1 and Fn2 rows for mode, brightness, hue, saturation, speed;
+     toggle on Fn+Tab. Notes that layer and caps indicators do not render while
+     RGB is toggled off (see rgb_matrix.c behavior).
+   - Mac vs Windows: DIP switch picks the base layer; what differs between the
+     two bases and between MAC_FN and WIN_FN.
+   - Recovery and flashing: Fn1+Fn2+Fn3 for bootloader, the two `qmk compile`
+     targets, and `qmk flash`.
 
 ## Verification
 
@@ -146,6 +200,10 @@ Build both targets; both must succeed with no new warnings:
 qmk compile -kb keychron/q4/ansi/v1 -km jongbinjung
 qmk compile -kb keychron/q4/ansi/v2 -km jongbinjung
 ```
+
+Readme check: every key label in the diagrams must match the keymap after the
+change. Verify by diffing the diagram labels against `qmk c2json` output by
+eye, layer by layer, before committing.
 
 Manual checklist after flashing (user):
 
