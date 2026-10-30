@@ -49,7 +49,8 @@ enum custom_keycodes {
                        // starting from the SAFE_RANGE to avoid conflicts with
                        // existing keycodes.
   VI_WORD,  // vi navigation 'w'
-  VI_BACK  // vi navigation 'b'
+  VI_BACK,  // vi navigation 'b'
+  VI_INS    // vi 'i': leave a locked VI layer (back to "insert mode")
 };
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -75,6 +76,27 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         // Release modifier on key release
         SEND_STRING(SS_UP(X_LEFT));
         unregister_mods(MOD_LCTL);
+      }
+      break;
+
+    case VI_INS:
+      // vi "i": leave normal mode. layer_lock_off is a no-op when VI is only
+      // being held via space, so this never fights the momentary layer.
+      if (record->event.pressed) {
+        layer_lock_off(VI);
+      }
+      return false;
+
+    case LCTL_T(KC_ESC):
+      // vi "Esc": a *tap* of Esc/Ctrl while VI is active locks VI (normal
+      // mode) instead of sending Escape. Holding it is still Ctrl inside VI,
+      // and tapping it in an already-locked VI is a no-op, like vi. The key is
+      // transparent on the VI layer, so the mod-tap keycode arrives here.
+      if (record->tap.count && layer_state_is(VI)) {
+        if (record->event.pressed) {
+          layer_lock_on(VI);
+        }
+        return false;
       }
       break;
   }
@@ -168,7 +190,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [VI] = LAYOUT_ansi_61(
      KC_GRV,    KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0, KC_MINS, KC_EQL,  KC_BSPC,
-     KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP,  TG(VI),  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
+     KC_TAB, _______, VI_WORD, _______, _______, _______, _______, KC_PGUP,  VI_INS,  KC_END,   KC_NO, KC_PGDN,  KC_UP,   KC_DEL,
     _______, KC_MSTP, KC_MPLY, KC_MPRV, KC_MNXT, _______, KC_LEFT, KC_DOWN,   KC_UP, KC_RGHT, _______, _______,   RCTL_T(KC_ENT),
     _______,   KC_NO,  KC_DEL,   KC_NO, _______, VI_BACK, KC_PGDN,   KC_NO,   KC_NO,   KC_NO,   KC_NO, _______,
     KC_LCTL, KC_LOPT, KC_LCMD,                   _______,                   KC_RCMD, _______, _______, KC_RCTL)
