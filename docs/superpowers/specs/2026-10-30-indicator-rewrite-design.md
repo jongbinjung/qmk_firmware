@@ -107,24 +107,23 @@ in this table rather than back into per-layer blocks.
 - The `switch` and its five cases are deleted. The `q4_index` enum stays (used
   by `lock_leds` and `overrides`).
 
-### Expected result per layer (derived from the keymap, for verification)
+### Expected result per layer (output of tools/check_indicators.py)
 
-- NUMPAD: grave white (Esc), number row white, U I O J K L N M white, comma
-  and period white, P white (Backspace), semicolon white (Enter), brackets and
-  backslash white, Space amber (lock). Everything else dark.
-- FNPAD: number row white (F1 to F12), U I O J K L white, Space amber.
-- HHKB_FN: number row white (F-keys), backslash red (Delete), Tab white
-  (Caps), bracket green (Up), Backspace red, A S D teal, K green (Home),
-  L blue (PgUp), semicolon and quote green, Enter white, X red, N blue,
-  comma green (End), period blue (PgDn), slash green, Space amber. U, W, B
-  dark. Bottom-row modifiers dark on the Mac base (they repeat it), white on
-  the Windows base (they differ from Win/Alt).
-- VI: Backspace red, W blue, U blue, I amber, O green, left bracket blue,
-  right bracket green, Delete key red, A teal (stop), S teal, D blue (PgDn),
-  F teal, H J K L green, X red, B blue, N blue, Esc/Ctrl amber (override),
-  Fn3 white (`KC_RCTL`, differs from `MO(HHKB_FN)`). Number row, Tab, Enter,
+Keys not listed are dark. Dark includes keys that repeat the base layer, such
+as NUMPAD's number row, brackets, comma and period.
+
+- NUMPAD: white grave (Esc), U I O, P (Backspace), Backspace position
+  (backslash), J K L, semicolon (Enter), N M; amber Space.
+- FNPAD: white number row (F1 to F12), U I O, J K L; amber Space.
+- HHKB_FN: green bracket, K, semicolon, quote, comma, slash; blue L, N,
+  period; teal A S D; red backslash position (Delete), Backspace, X; amber
+  Space; white number row (F-keys) and Tab (Caps Lock). U W B dark. Bottom-row
+  modifiers dark on the Mac base, white on the Windows base.
+- VI: green O, right bracket, H J K L; blue W U left bracket D B N; teal
+  A S F; red Backspace, X; amber I, plus Esc/Ctrl via the override; white
+  backslash position (Backspace) and Fn3 (`KC_RCTL`). Number row, Tab, Enter,
   bottom-row modifiers dark.
-- SYS_FN: Fn3 red. Everything else dark.
+- SYS_FN: red Fn3. Everything else dark.
 
 Caps glow expected result: on the base layer with Caps Lock on, the 26 letter
 keys are white and everything else animates. With Caps Word on, yellow. In
