@@ -217,6 +217,12 @@ static void set_indicator(uint8_t led_min, uint8_t led_max, uint8_t led,
   }
 }
 
+// Layers whose lighting is derived from the keymap: every LED in the chunk is
+// set, replacing the animation. The Fn layers and the bases are left to the
+// animation. Add a layer here to give it the same treatment.
+static const layer_state_t mapped_layers =
+    (1UL << NUMPAD) | (1UL << FNPAD) | (1UL << HHKB_FN) | (1UL << VI) | (1UL << SYS_FN);
+
 // Which LED to light (amber) when a layer is locked: its activator key.
 static const struct { uint8_t layer; uint8_t led; } lock_leds[] = {
   {NUMPAD,  I_TAB},
@@ -228,176 +234,118 @@ static const struct { uint8_t layer; uint8_t led; } lock_leds[] = {
   {SHR_FN,  I_FN2},
 };
 
-bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
-  switch(get_highest_layer(layer_state|default_layer_state)) {
+// Keys whose meaning lives in code rather than in the keymap entry, so the
+// generic pass cannot see them. Painted after it, on mapped layers only.
+static const struct { uint8_t layer; uint8_t led; rgb_t color; } overrides[] = {
+  {VI, I_CAPS, {RGB_ORANGE}},  // Esc/Ctrl tap locks VI (see process_record_user)
+};
 
-    case NUMPAD:
-      for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-          uint8_t index = g_led_config.matrix_co[row][col];
+// A key is a pass-through when it does nothing new on this layer: transparent,
+// none, identical to the base layer, or the base key's tap action (KC_TAB over
+// LT(NUMPAD,KC_TAB)). Pass-throughs stay dark so only real bindings light up.
+static bool is_passthrough(uint16_t kc, uint16_t base) {
+  if (kc == KC_TRNS || kc == KC_NO || kc == base) {
+    return true;
+  }
+  if (IS_QK_LAYER_TAP(base) && kc == QK_LAYER_TAP_GET_TAP_KEYCODE(base)) {
+    return true;
+  }
+  if (IS_QK_MOD_TAP(base) && kc == QK_MOD_TAP_GET_TAP_KEYCODE(base)) {
+    return true;
+  }
+  return false;
+}
 
-          if (index >= led_min && index < led_max && index != NO_LED) {
-
-            if(keymap_key_to_keycode(SYS_FN, (keypos_t){col,row}) == KC_TRNS) {
-              rgb_matrix_set_color(index, RGB_OFF);
-            } else {
-              rgb_matrix_set_color(I_7, RGB_WHITE);
-              rgb_matrix_set_color(I_8, RGB_WHITE);
-              rgb_matrix_set_color(I_9, RGB_WHITE);
-
-              rgb_matrix_set_color(I_U, RGB_WHITE);
-              rgb_matrix_set_color(I_I, RGB_WHITE);
-              rgb_matrix_set_color(I_O, RGB_WHITE);
-
-              rgb_matrix_set_color(I_J, RGB_WHITE);
-              rgb_matrix_set_color(I_K, RGB_WHITE);
-              rgb_matrix_set_color(I_L, RGB_WHITE);
-
-              rgb_matrix_set_color(I_N, RGB_WHITE);
-            }
-
-          }
-        }
-      }
-      break;
-
-    case FNPAD:
-      for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-          uint8_t index = g_led_config.matrix_co[row][col];
-
-          if (index >= led_min && index < led_max && index != NO_LED) {
-            uint16_t keycode = keymap_key_to_keycode(SYS_FN, (keypos_t){col,row});
-
-            if(keycode == KC_TRNS || keycode == KC_NO) {
-              rgb_matrix_set_color(index, RGB_OFF);
-            } else {
-              rgb_matrix_set_color(I_7, RGB_RED);
-              rgb_matrix_set_color(I_8, RGB_RED);
-              rgb_matrix_set_color(I_9, RGB_RED);
-              rgb_matrix_set_color(I_U, RGB_RED);
-              rgb_matrix_set_color(I_I, RGB_RED);
-              rgb_matrix_set_color(I_O, RGB_RED);
-              rgb_matrix_set_color(I_J, RGB_RED);
-              rgb_matrix_set_color(I_K, RGB_RED);
-              rgb_matrix_set_color(I_L, RGB_RED);
-              rgb_matrix_set_color(I_N, RGB_RED);
-            }
-
-          }
-        }
-      }
-      break;
-
-    case HHKB_FN:
-      for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-          uint8_t index = g_led_config.matrix_co[row][col];
-
-          if (index >= led_min && index < led_max && index != NO_LED) {
-
-            uint16_t keycode = keymap_key_to_keycode(SYS_FN, (keypos_t){col,row});
-
-            if(keycode == KC_TRNS || keycode == KC_NO) {
-              rgb_matrix_set_color(index, RGB_OFF);
-            } else {
-              rgb_matrix_set_color(I_A, RGB_PURPLE);
-              rgb_matrix_set_color(I_S, RGB_TEAL);
-              rgb_matrix_set_color(I_D, RGB_RED);
-
-              // Arrows
-              rgb_matrix_set_color(I_LBRC, RGB_GREEN);
-              rgb_matrix_set_color(I_SCLN, RGB_GREEN);
-              rgb_matrix_set_color(I_QUOT, RGB_GREEN);
-              rgb_matrix_set_color(I_SLSH, RGB_GREEN);
-
-              rgb_matrix_set_color(I_X, RGB_RED);
-
-              rgb_matrix_set_color(I_U, RGB_BLUE);
-              rgb_matrix_set_color(I_N, RGB_BLUE);
-              rgb_matrix_set_color(I_W, RGB_BLUE);
-              rgb_matrix_set_color(I_B, RGB_BLUE);
-            }
-
-          }
-        }
-      }
-      break;
-
-    case VI:
-      for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-          uint8_t index = g_led_config.matrix_co[row][col];
-
-          if (index >= led_min && index < led_max && index != NO_LED) {
-
-            uint16_t keycode = keymap_key_to_keycode(SYS_FN, (keypos_t){col,row});
-
-            if(keycode == KC_TRNS || keycode == KC_NO) {
-              rgb_matrix_set_color(index, RGB_OFF);
-            } else {
-              rgb_matrix_set_color(I_A, RGB_RED);
-              rgb_matrix_set_color(I_S, RGB_GREEN);
-              rgb_matrix_set_color(I_D, RGB_BLUE);   // PgDn, like U/N
-              rgb_matrix_set_color(I_F, RGB_TEAL);
-
-              rgb_matrix_set_color(I_H, RGB_GREEN);
-              rgb_matrix_set_color(I_J, RGB_GREEN);
-              rgb_matrix_set_color(I_K, RGB_GREEN);
-              rgb_matrix_set_color(I_L, RGB_GREEN);
-
-              rgb_matrix_set_color(I_X, RGB_RED);
-
-              rgb_matrix_set_color(I_U, RGB_BLUE);
-              rgb_matrix_set_color(I_N, RGB_BLUE);
-              rgb_matrix_set_color(I_W, RGB_BLUE);
-              rgb_matrix_set_color(I_B, RGB_BLUE);
-            }
-
-          }
-        }
-      }
-      break;
-
-    case SYS_FN:
-      for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
-        for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
-          uint8_t index = g_led_config.matrix_co[row][col];
-
-          if (index >= led_min && index < led_max && index != NO_LED) {
-            uint16_t keycode = keymap_key_to_keycode(SYS_FN, (keypos_t){col,row});
-
-            if(keycode == KC_TRNS || keycode == KC_NO) {
-              rgb_matrix_set_color(index, RGB_OFF);
-            } else {
-              rgb_matrix_set_color(60, RGB_RED);
-            }
-
-          }
-        }
-      }
-      break;
-
+// Colour by what a bound key does. Anything bound but uncategorised is white.
+// Mirrored by tools/check_indicators.py; keep the two in step.
+static rgb_t color_for_keycode(uint16_t kc) {
+  switch (kc) {
+    case KC_LEFT: case KC_DOWN: case KC_UP: case KC_RGHT:
+    case KC_HOME: case KC_END:
+      return (rgb_t){RGB_GREEN};                      // navigation
+    case KC_PGUP: case KC_PGDN: case VI_WORD: case VI_BACK:
+      return (rgb_t){RGB_BLUE};                       // page / word jumps
+    case KC_MPRV: case KC_MPLY: case KC_MNXT: case KC_MSTP: case KC_MUTE:
+    case KC_VOLU: case KC_VOLD: case KC_BRIU: case KC_BRID:
+      return (rgb_t){RGB_TEAL};                       // media
+    case KC_DEL: case QK_BOOT:
+      return (rgb_t){RGB_RED};                        // destructive
+    case QK_LLCK: case VI_INS:
+    case QK_MOMENTARY ... QK_MOMENTARY_MAX:
+    case QK_TOGGLE_LAYER ... QK_TOGGLE_LAYER_MAX:
+    case QK_LAYER_TAP ... QK_LAYER_TAP_MAX:
+      return (rgb_t){RGB_ORANGE};                     // layer / lock
+    case RM_ON ... RM_SPDD:
+      return (rgb_t){RGB_PURPLE};                     // RGB controls
     default:
-      break;
+      return (rgb_t){RGB_WHITE};
+  }
+}
+
+// Caps glow: host Caps Lock paints the letter keys white (and wins); Caps Word
+// paints them yellow. Returns false when neither is active.
+static bool caps_glow(rgb_t *out) {
+  if (host_keyboard_led_state().caps_lock) {
+    *out = (rgb_t){RGB_WHITE};
+    return true;
+  }
+  if (is_caps_word_on()) {
+    *out = (rgb_t){RGB_YELLOW};
+    return true;
+  }
+  return false;
+}
+
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+  const uint8_t layer  = get_highest_layer(layer_state | default_layer_state);
+  const uint8_t base   = get_highest_layer(default_layer_state);
+  const bool    mapped = (mapped_layers >> layer) & 1;
+  rgb_t         glow;
+  const bool    caps   = caps_glow(&glow);
+
+  // One pass over the matrix. Priority per LED: layer binding (mapped layers)
+  // > caps glow on letter keys > dark on mapped layers / animation elsewhere.
+  if (mapped || caps) {
+    for (uint8_t row = 0; row < MATRIX_ROWS; ++row) {
+      for (uint8_t col = 0; col < MATRIX_COLS; ++col) {
+        const uint8_t led = g_led_config.matrix_co[row][col];
+        if (led == NO_LED || led < led_min || led >= led_max) {
+          continue;
+        }
+        const keypos_t pos     = {col, row};
+        const uint16_t base_kc = keymap_key_to_keycode(base, pos);
+        if (mapped) {
+          const uint16_t kc = keymap_key_to_keycode(layer, pos);
+          if (!is_passthrough(kc, base_kc)) {
+            const rgb_t c = color_for_keycode(kc);
+            rgb_matrix_set_color(led, c.r, c.g, c.b);
+            continue;
+          }
+        }
+        if (caps && base_kc >= KC_A && base_kc <= KC_Z) {
+          rgb_matrix_set_color(led, glow.r, glow.g, glow.b);
+        } else if (mapped) {
+          rgb_matrix_set_color(led, RGB_OFF);
+        }
+      }
+    }
   }
 
-  // Drawn after the per-layer blocks above, which first blank every LED in
-  // range, so these always win.
+  if (mapped) {
+    for (uint8_t i = 0; i < ARRAY_SIZE(overrides); i++) {
+      if (overrides[i].layer == layer) {
+        set_indicator(led_min, led_max, overrides[i].led,
+                      overrides[i].color.r, overrides[i].color.g, overrides[i].color.b);
+      }
+    }
+  }
 
-  // Layer Lock state: light the locked layer's activator key amber.
+  // Layer Lock state: light the locked layer's activator key amber. Drawn last
+  // so it wins; the space bar is a pass-through on every layer anyway.
   for (uint8_t i = 0; i < ARRAY_SIZE(lock_leds); i++) {
     if (is_layer_locked(lock_leds[i].layer)) {
       set_indicator(led_min, led_max, lock_leds[i].led, RGB_ORANGE);
     }
-  }
-
-  // Caps: host Caps Lock (literal key, Fn3+Tab) is white and wins; Caps Word
-  // (both shifts) is yellow. Caps Word never changes the host LED state.
-  if (host_keyboard_led_state().caps_lock) {
-    set_indicator(led_min, led_max, CAPS_LOCK_LED_INDEX, RGB_WHITE);
-  } else if (is_caps_word_on()) {
-    set_indicator(led_min, led_max, CAPS_LOCK_LED_INDEX, RGB_YELLOW);
   }
   return false;
 }
