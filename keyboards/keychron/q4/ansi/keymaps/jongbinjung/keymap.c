@@ -312,7 +312,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [NUMPAD] = LAYOUT_ansi_61(
     KC_ESC,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6, KC_7, KC_8,      KC_9, KC_0,        _______, _______, _______,
-    _______, _______, _______, _______, _______, _______, _______, KC_4, KC_5,      KC_6, KC_BSPC,     KC_LBRC, KC_RBRC, KC_BSLS,
+    _______, KC_PGUP, KC_PGDN, _______, _______, _______, _______, KC_4, KC_5,      KC_6, KC_BSPC,     KC_LBRC, KC_RBRC, KC_BSLS,
     _______, _______, _______, _______, _______, _______, _______, KC_1, KC_2,      KC_3, KC_KP_ENTER, _______, _______,
     _______, _______, _______, _______, _______, _______,    KC_0, KC_0, KC_COMM, KC_DOT, _______, _______,
     _______, _______, _______,                            QK_LLCK,                        _______, _______, _______, _______),

@@ -117,6 +117,8 @@ def main():
         (vi.get("I") == "amber", "VI lights I amber (the unlock key)"),
         (not {"U", "W", "B"} & hhkb.keys(), "HHKB_FN leaves U W B dark"),
         ("N" not in fnpad, "FNPAD leaves N dark"),
+        (lit_map(layers, "NUMPAD", "MAC_BASE").get("Q") == "blue"
+         and lit_map(layers, "NUMPAD", "MAC_BASE").get("W") == "blue", "NUMPAD Q and W (page keys) are blue"),
         (sysfn == {"Fn3": "red"}, "SYS_FN lights only Fn3, red"),
         (vi.get("Esc") is None, "VI Esc/Ctrl is a pass-through (override paints it)"),
         (vi.get("4") == "blue" and vi.get("6") == "blue", "VI $ and ^ (4, 6) are blue"),

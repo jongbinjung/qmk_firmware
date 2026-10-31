@@ -161,7 +161,7 @@ nothing on that layer.
 | Esc |  1  |  2  |  3  |  4  |  5  |  6  |  7  |  8  |  9  |  0  |     |     |           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|        |     |     |     |     |     |     |  4  |  5  |  6  | Bksp|  [  |  ]  |   \    |
+|        | PgUp| PgDn|     |     |     |     |  4  |  5  |  6  | Bksp|  [  |  ]  |   \    |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
 |         |     |     |     |     |     |     |  1  |  2  |  3  | Ent |     |             |
@@ -308,7 +308,8 @@ it (the space bar lights amber). Everything below assumes VI is active.
 
 - Hold Tab: U/I/O are 4/5/6, J/K/L are 1/2/3, N and M are both 0, `,` and
   `.` stay as they are, the number row stays as digits, P is Backspace and `;`
-  is Enter. Grave becomes a plain Esc.
+  is Enter. Grave becomes a plain Esc, and Q and W are Page Up and Page Down
+  for scrolling with the left hand while entering numbers.
 - Hold grave (Mac base): F4/F5/F6 on U/I/O and F1/F2/F3 on J/K/L, with F1 to
   F12 on the number row.
 - Lock either one with Space when entering a lot of numbers.
