@@ -20,11 +20,11 @@ pick the variant. Flash with `qmk flash -kb keychron/q4/ansi/v2 -km jongbinjung`
 |----------|-----------------------------------|----------|---------|
 | MAC_BASE | DIP switch set to Mac             | no       | Base layer, Opt/Cmd modifiers |
 | WIN_BASE | DIP switch set to Windows         | no       | Base layer, Win/Alt modifiers. No FPAD layer-tap on grave |
-| MAC_FN   | hold Fn1 (Mac base)               | yes      | OS: media on the left hand (Q/W/E/R transport, A/S/D volume) and number row, brightness, arrows, nav, Del |
+| MAC_FN   | hold Fn1 (Mac base)               | yes      | OS: media on the left hand (A/S/D/F transport, Z/X/C volume) and number row, brightness, arrows, nav, Del |
 | WIN_FN   | hold Fn1 (Windows base)           | yes      | Same as MAC_FN plus Menu, PrtSc, ScrLk |
 | SHR_FN   | hold Fn2                          | yes      | Keyboard: RGB, NKRO; mouse keys on the right hand; F-keys on the number row |
 | SYS_FN   | hold Fn1 then Fn2 (or Fn2 then Fn1) | no     | Bootloader on Fn3 |
-| NUMPAD   | hold Tab                          | yes      | Numpad on U/I/O, J/K/L, N/M |
+| NUMPAD   | hold Tab                          | yes      | Numpad on U/I/O, J/K/L, N/M; media on A/S/D/F and Z/X/C |
 | FNPAD    | hold grave (Mac base only)        | yes      | F1 to F6 on the same keys as the numpad |
 | HHKB_FN  | hold Fn3                          | yes      | HHKB Fn layer: F-keys, nav on [ ; ' /, media on A/S/D, Caps Lock on Tab |
 | VI       | hold Space, or lock with Space+Esc | yes     | vi normal mode: hjkl, w/b/e, 0 ^ $, g/G, x, u, y/p, visual mode on v |
@@ -81,13 +81,13 @@ nothing on that layer.
 |  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|        | |<< | >|| | >>| | Stop|     |     |     |     |     | Ins | PgUp| Home|        |
+|        |     |     |     |     |     |     |     |     |     | Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         | Vol-| Vol+| Mute|     |     |     |     |  Up |  x  | PgDn| End |             |
+|         | |<< | >|| | >>| | Stop|     |     |     |  Up |  x  | PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     |     | Left| Down| Rght| Del |               |
+|             | Vol-| Vol+| Mute|     |     |     | Left| Down| Rght| Del |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       |      | SYS  |       |
@@ -101,13 +101,13 @@ nothing on that layer.
 |  `  | Bri-| Bri+|  x  |  x  |  x  |  x  | |<< | >|| | >>| | Mute| Vol-| Vol+|           |
 |     |     |     |     |     |     |     |     |     |     |     |     |     |           |
 +--------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+--------+
-|        | |<< | >|| | >>| | Stop|     |     |     | Menu| ScrL| Ins | PgUp| Home|        |
+|        |     |     |     |     |     |     |     | Menu| ScrL| Ins | PgUp| Home|        |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         | Vol-| Vol+| Mute|     |     |     |     |  Up | PrSc| PgDn| End |             |
+|         | |<< | >|| | >>| | Stop|     |     |     |  Up | PrSc| PgDn| End |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     |     | Left| Down| Rght| Del |               |
+|             | Vol-| Vol+| Mute|     |     |     | Left| Down| Rght| Del |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       |      | SYS  |       |
@@ -164,10 +164,10 @@ nothing on that layer.
 |        | PgUp| PgDn|     |     |     |     |  4  |  5  |  6  | Bksp|  [  |  ]  |   \    |
 |        |     |     |     |     |     |     |     |     |     |     |     |     |        |
 +---------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+-------------+
-|         |     |     |     |     |     |     |  1  |  2  |  3  | Ent |     |             |
+|         | |<< | >|| | >>| | Stop|     |     |  1  |  2  |  3  | Ent |     |             |
 |         |     |     |     |     |     |     |     |     |     |     |     |             |
 +-------------+-----+-----+-----+-----+-----+-----+-----+-----+-----+-----+---------------+
-|             |     |     |     |     |     |  0  |  0  |  ,  |  .  |     |               |
+|             | Vol-| Vol+| Mute|     |     |  0  |  0  |  ,  |  .  |     |               |
 |             |     |     |     |     |     |     |     |     |     |     |               |
 +-------+------+------+-------------------------------------+-------+------+------+-------+
 |       |      |      |                 LOCK                |       |      |      |       |
@@ -309,7 +309,9 @@ it (the space bar lights amber). Everything below assumes VI is active.
 - Hold Tab: U/I/O are 4/5/6, J/K/L are 1/2/3, N and M are both 0, `,` and
   `.` stay as they are, the number row stays as digits, P is Backspace and `;`
   is Enter. Grave becomes a plain Esc, and Q and W are Page Up and Page Down
-  for scrolling with the left hand while entering numbers.
+  for scrolling with the left hand while entering numbers. A/S/D/F are
+  previous, play/pause, next and stop; Z/X/C are volume down, up and mute
+  (the same cluster as Fn1).
 - Hold grave (Mac base): F4/F5/F6 on U/I/O and F1/F2/F3 on J/K/L, with F1 to
   F12 on the number row.
 - Lock either one with Space when entering a lot of numbers.

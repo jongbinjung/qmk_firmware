@@ -280,19 +280,19 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
               KC_LCTL, KC_LGUI, KC_LALT,            LT(VI, KC_SPC),             KC_RALT, MO(WIN_FN), MO(SHR_FN), MO(HHKB_FN)),
 
   // Left hand: media cluster for one-handed use while the right hand holds
-  // Fn1. A/S/D match HHKB_FN (Vol-, Vol+, Mute); Q/W/E/R are transport.
+  // Fn1. A/S/D/F are transport, Z/X/C volume (same as NUMPAD).
   [MAC_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE,  KC_VOLD,  KC_VOLU,  _______,
-    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
-    _______, KC_VOLD,  KC_VOLU, KC_MUTE, _______, _______, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
-    _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, _______, _______, KC_INS,   KC_PGUP,  KC_HOME,  _______,
+    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, KC_UP,   KC_NO,   KC_PGDN,  KC_END,   _______,
+    _______,           KC_VOLD, KC_VOLU, KC_MUTE, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RIGHT, KC_DEL,   _______,
     _______, _______,  _______,                    QK_LLCK,                           _______,  _______,  MO(SYS_FN),  _______),
 
   [WIN_FN] = LAYOUT_ansi_61(
     KC_GRV,  KC_BRID,  KC_BRIU, KC_NO,   KC_NO,   KC_NO,   KC_NO,   KC_MPRV, KC_MPLY, KC_MNXT, KC_MUTE, KC_VOLD,  KC_VOLU,  _______,
-    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
-    _______, KC_VOLD,  KC_VOLU, KC_MUTE, _______, _______, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
-    _______,           _______, _______, _______, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
+    _______, _______,  _______, _______, _______, _______, _______, _______, KC_APP,  KC_SCRL, KC_INS,  KC_PGUP,  KC_HOME,  _______,
+    _______, KC_MPRV,  KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, _______, KC_UP,   KC_PSCR, KC_PGDN, KC_END,   _______,
+    _______,           KC_VOLD, KC_VOLU, KC_MUTE, _______, _______, _______, KC_LEFT, KC_DOWN, KC_RGHT, KC_DEL,   _______,
     _______, _______,  _______,                            QK_LLCK,                            _______, _______,  MO(SYS_FN),  _______),
 
   // Keyboard settings on the left hand, mouse keys on the right.
@@ -313,8 +313,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [NUMPAD] = LAYOUT_ansi_61(
     KC_ESC,     KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6, KC_7, KC_8,      KC_9, KC_0,        _______, _______, _______,
     _______, KC_PGUP, KC_PGDN, _______, _______, _______, _______, KC_4, KC_5,      KC_6, KC_BSPC,     KC_LBRC, KC_RBRC, KC_BSLS,
-    _______, _______, _______, _______, _______, _______, _______, KC_1, KC_2,      KC_3, KC_KP_ENTER, _______, _______,
-    _______, _______, _______, _______, _______, _______,    KC_0, KC_0, KC_COMM, KC_DOT, _______, _______,
+    _______, KC_MPRV, KC_MPLY, KC_MNXT, KC_MSTP, _______, _______, KC_1, KC_2,      KC_3, KC_KP_ENTER, _______, _______,
+    _______, KC_VOLD, KC_VOLU, KC_MUTE, _______, _______,    KC_0, KC_0, KC_COMM, KC_DOT, _______, _______,
     _______, _______, _______,                            QK_LLCK,                        _______, _______, _______, _______),
 
   [FNPAD] = LAYOUT_ansi_61(

@@ -119,6 +119,8 @@ def main():
         ("N" not in fnpad, "FNPAD leaves N dark"),
         (lit_map(layers, "NUMPAD", "MAC_BASE").get("Q") == "blue"
          and lit_map(layers, "NUMPAD", "MAC_BASE").get("W") == "blue", "NUMPAD Q and W (page keys) are blue"),
+        (lit_map(layers, "NUMPAD", "MAC_BASE").get("A") == "teal"
+         and lit_map(layers, "NUMPAD", "MAC_BASE").get("Z") == "teal", "NUMPAD A and Z (media) are teal"),
         (sysfn == {"Fn3": "red"}, "SYS_FN lights only Fn3, red"),
         (vi.get("Esc") is None, "VI Esc/Ctrl is a pass-through (override paints it)"),
         (vi.get("4") == "blue" and vi.get("6") == "blue", "VI $ and ^ (4, 6) are blue"),
@@ -127,8 +129,8 @@ def main():
         ("S" not in vi and "Bksp" not in vi, "VI leaves S and Backspace dark"),
         (shr.get("Tab") == "purple", "SHR_FN Tab (RGB toggle) is purple"),
         (shr.get("J") == "cyan" and shr.get("B") == "white", "SHR_FN J is cyan (mouse), B white (NKRO)"),
-        ("Tab" not in macfn and macfn.get("Q") == "teal" and macfn.get("A") == "teal",
-         "MAC_FN Tab dark (RGB moved off); Q and A teal (left-hand media)"),
+        ("Tab" not in macfn and "Q" not in macfn and macfn.get("A") == "teal" and macfn.get("Z") == "teal",
+         "MAC_FN Tab and Q dark; A and Z teal (left-hand media)"),
     ]
     for ok, msg in expect:
         print(("PASS " if ok else "FAIL ") + msg)
